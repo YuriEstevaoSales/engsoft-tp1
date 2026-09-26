@@ -7,16 +7,6 @@ description: Use this skill whenever working on any DocHub feature (backend or f
 
 DocHub is a platform where patients search for doctors by specialty, check availability, view a doctor's schedule and book appointments. Doctors manage their own schedule, bio and accepted insurance plans (convênios). There are three roles: `paciente`, `medico`, `admin`.
 
-## Core entities
-
-- **User (base)**: id, nome, email, senha_hash, role (`paciente` | `medico` | `admin`), created_at
-- **Patient**: linked to User, personal data used for booking
-- **Doctor**: linked to User, especialidade(s), CRM, bio, convênios aceitos, agenda/disponibilidade
-- **Specialty**: catalog of medical specialties doctors can be searched by
-- **Availability/Agenda**: time slots a doctor opens for booking
-- **Appointment**: patient_id, doctor_id, data_hora, status (`pendente` | `confirmada` | `cancelada`), created_at
-- **Insurance/Convênio**: catalog of insurance plans doctors can accept
-
 ## Key business rules to respect
 
 - A doctor cannot have two appointments at overlapping times.
