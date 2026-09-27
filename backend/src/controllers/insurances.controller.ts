@@ -8,7 +8,6 @@ export class InsurancesController {
     const insurances = await db.orm.public.Insurances
       .select("id", "name")
       .orderBy((insurance) => insurance.id.asc())
-      .limit(10)
       .all();
 
     return {
