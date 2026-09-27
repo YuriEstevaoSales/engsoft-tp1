@@ -25,7 +25,7 @@ export function LoginPage() {
         return;
       }
       saveSession(data.user as never);
-      void navigate("/");
+      void navigate("/perfil");
     } catch {
       setError("Falha de conexão com o servidor.");
     } finally {

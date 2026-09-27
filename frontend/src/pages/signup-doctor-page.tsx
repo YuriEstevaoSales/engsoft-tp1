@@ -39,7 +39,7 @@ export function SignupDoctorPage() {
       }
       sessionStorage.removeItem(DRAFT_KEY);
       saveSession(data.user as never);
-      void navigate("/");
+      void navigate("/perfil");
     } catch {
       setError("Falha de conexão com o servidor.");
     } finally {

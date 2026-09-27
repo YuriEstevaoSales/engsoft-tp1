@@ -6,6 +6,7 @@ import { AboutPage, HomePage } from "./pages/home-page.js";
 import { LoginPage } from "./pages/login-page.js";
 import { SignupPage } from "./pages/signup-page.js";
 import { SignupDoctorPage } from "./pages/signup-doctor-page.js";
+import { DoctorProfilePage } from "./pages/doctor-profile-page.js";
 import { TestPage, TestPageError } from "./pages/test-page.js";
 import { loadTestData } from "./routes/test-data.js";
 import "./styles.css";
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
       { path: "/", Component: HomePage },
       { path: "/sobre", Component: AboutPage },
       { path: "/cadastro/dados", Component: SignupDoctorPage },
+      { path: "/perfil", Component: DoctorProfilePage },
     ],
   },
   { path: "/teste-banco", loader: loadTestData, Component: TestPage, ErrorBoundary: TestPageError },
