@@ -9,6 +9,7 @@ import { SignupDoctorPage } from "./pages/signup-doctor-page.js";
 import { DoctorProfilePage } from "./pages/doctor-profile-page.js";
 import { TestPage, TestPageError } from "./pages/test-page.js";
 import { loadTestData } from "./routes/test-data.js";
+import { requireSignupDraft } from "./routes/signup-draft.js";
 import "./styles.css";
 import "./styles/layout.css";
 import "./styles/login.css";
@@ -22,7 +23,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/", Component: HomePage },
       { path: "/sobre", Component: AboutPage },
-      { path: "/cadastro/dados", Component: SignupDoctorPage },
+      { path: "/cadastro/dados", loader: requireSignupDraft, Component: SignupDoctorPage },
       { path: "/perfil", Component: DoctorProfilePage },
     ],
   },

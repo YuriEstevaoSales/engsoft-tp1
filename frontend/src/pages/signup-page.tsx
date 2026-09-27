@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 
 type Insurance = { id: number; name: string };
 
-const DRAFT_KEY = "dochub.signupDraft";
+import { SIGNUP_DRAFT_KEY } from "../routes/signup-draft.js";
 
 async function loadInsurances() {
   for (let attempt = 0; attempt < 8; attempt++) {
@@ -31,7 +31,7 @@ export function SignupPage() {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const value = (name: string) => String(form.get(name) ?? "");
-    sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
+    sessionStorage.setItem(SIGNUP_DRAFT_KEY, JSON.stringify({
       email: value("email"), name: value("name"), cpf: value("cpf"),
       birthday: value("birthday"), phoneNumber: value("phoneNumber"),
       stateAddress: value("stateAddress"), city: value("city"),

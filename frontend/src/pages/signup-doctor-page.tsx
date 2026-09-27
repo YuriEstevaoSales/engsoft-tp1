@@ -1,8 +1,8 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router";
 import { saveSession } from "../auth/session.js";
+import { SIGNUP_DRAFT_KEY } from "../routes/signup-draft.js";
 
-const DRAFT_KEY = "dochub.signupDraft";
 const SPECIALTIES = ["Clínica Geral", "Cardiologia", "Dermatologia", "Pediatria", "Ortopedia"];
 
 export function SignupDoctorPage() {
@@ -10,13 +10,9 @@ export function SignupDoctorPage() {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
 
-  useEffect(() => {
-    if (!sessionStorage.getItem(DRAFT_KEY)) void navigate("/cadastro");
-  }, [navigate]);
-
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const draft = JSON.parse(sessionStorage.getItem(DRAFT_KEY) ?? "null");
+    const draft = JSON.parse(sessionStorage.getItem(SIGNUP_DRAFT_KEY) ?? "null");
     if (!draft) return;
     const form = new FormData(event.currentTarget);
     const value = (name: string) => String(form.get(name) ?? "");
@@ -37,7 +33,7 @@ export function SignupDoctorPage() {
         setError(data.message ?? "Não foi possível cadastrar.");
         return;
       }
-      sessionStorage.removeItem(DRAFT_KEY);
+      sessionStorage.removeItem(SIGNUP_DRAFT_KEY);
       saveSession(data.user as never);
       void navigate("/perfil");
     } catch {
