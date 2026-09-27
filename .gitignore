@@ -29,3 +29,5 @@ build
 *.launch
 .settings/
 
+
+/generated/prisma

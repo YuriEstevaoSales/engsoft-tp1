@@ -13,6 +13,43 @@ Trata-se de uma plataforma semelhante ao Doctoralia, onde os pacientes podem pro
 ## Tecnologias
 Typescript, Javascript, React, Nest e Gemini.
 
+## Página de teste do banco
+
+Para testar a integração local, configure `DATABASE_URL` no arquivo `.env`, inicie
+o PostgreSQL e execute:
+
+```bash
+npm run dev
+```
+
+Abra o endereço exibido pelo Vite no terminal, acrescentando `/teste-banco`
+(normalmente `http://localhost:5173/teste-banco`). A página usa o loader do
+React Router para buscar os dez primeiros convênios da tabela `insurances` pela
+API Nest e exibe ID e nome. Uma lista vazia indica que a consulta funcionou, mas
+não há convênios visíveis para a conexão atual. Se a API ou o banco não estiverem
+acessíveis, a página mostra um aviso e permite tentar novamente.
+
+A API tem controllers separados para cada tabela de domínio: `/api/insurances`,
+`/api/users`, `/api/doctors`, `/api/patients`, `/api/appointments` e
+`/api/medical-records`. Cada rota retorna até dez registros com campos limitados
+para teste; a rota de prontuários não retorna dados clínicos.
+
+## Executar com Docker
+
+Com Docker e o plugin Docker Compose instalados, na raiz do projeto execute:
+
+```bash
+docker compose up --build
+```
+
+Na primeira execução, o Compose cria um PostgreSQL local, inicializa as tabelas
+e inclui convênios de demonstração. Abra `http://localhost:5173/teste-banco`;
+a API também fica disponível em `http://localhost:3001/api/insurances` somente
+dentro da rede do Compose. Para encerrar, pressione `Ctrl+C` e execute
+`docker compose down`. Os dados do banco permanecem no volume `postgres-data`
+entre reinicializações. As credenciais definidas no Compose são apenas para
+desenvolvimento local; não as use em produção.
+
 ## Histórias de usuário
 
 Como paciente, eu gostaria de achar médicos próximos de mim.

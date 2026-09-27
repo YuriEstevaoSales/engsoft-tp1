@@ -1,0 +1,120 @@
+// use prisma-8
+// Contract inferred from the live database schema. Edit as needed, then run `prisma contract emit`.
+
+model Users {
+  id                SmallInt    @id(map: "users_pkey") @default(autoincrement())
+  createdAt         Timestamptz @default(now()) @map("created_at")
+  email             VarChar     @unique(map: "users_email_key")
+  name              VarChar
+  cpf               VarChar     @unique(map: "users_cpf_key")
+  birthday          Date
+  photo             String?
+  stateAddress      VarChar     @map("state_address")
+  city              VarChar?
+  phoneNumber       VarChar     @unique(map: "users_phone_number_key") @map("phone_number")
+  gender            VarChar?
+  passwordEncrypted VarChar     @map("password_encrypted")
+  doctors           Doctors[]
+  patients          Patients?
+
+  @@rls
+  @@map("users")
+}
+
+model Doctors {
+  id                 SmallInt      @id(map: "doctor_pkey") @default(autoincrement())
+  createdAt          Timestamptz   @default(now()) @map("created_at")
+  crmUf              VarChar       @map("crm_uf")
+  crmNumber          VarChar       @unique(map: "doctor_crm_number_key") @map("crm_number")
+  experienceTime     VarChar?      @map("experience_time")
+  street             VarChar
+  addressNumber      SmallInt      @map("address_number")
+  addressComplement  VarChar?      @map("address_complement")
+  appointmentPrice   Real?         @map("appointment_price")
+  description        VarChar?
+  remoteAppointments Boolean       @default(true) @map("remote_appointments")
+  userId             SmallInt      @map("user_id")
+  insurances         SmallInt[]?   @noCheck(elementNotNull)
+  specialty          String?
+  appointments       Appointments?
+  user               Users         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "doctors_user_id_fkey", index: false)
+
+  @@rls
+  @@map("doctors")
+}
+
+model Insurances {
+  id        SmallInt    @id(map: "insurances_pkey") @default(autoincrement())
+  createdAt Timestamptz @default(now()) @map("created_at")
+  name      VarChar     @unique(map: "insurances_name_key")
+  patients  Patients[]
+
+  @@rls
+  @@map("insurances")
+}
+
+model Patients {
+  id             SmallInt        @id(map: "patient_pkey") @default(autoincrement())
+  createdAt      Timestamptz     @default(now()) @map("created_at")
+  insurance      SmallInt?
+  userId         SmallInt        @unique(map: "patient_user_id_key") @map("user_id")
+  appointments   Appointments?
+  medicalRecords MedicalRecords?
+  insurances     Insurances?     @relation(fields: [insurance], references: [id], map: "patients_insurance_fkey", index: false)
+  user           Users           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "patients_user_id_fkey")
+
+  @@rls
+  @@map("patients")
+}
+
+model Appointments {
+  id          SmallInt    @id(map: "appointments_pkey") @default(autoincrement())
+  createdAt   Timestamptz @default(now()) @map("created_at")
+  doctorId    SmallInt    @unique(map: "appointments_doctor_id_key") @map("doctor_id")
+  patientId   SmallInt?   @unique(map: "appointments_patient_id_key") @map("patient_id")
+  date        Date
+  startTime   Time        @map("start_time")
+  endTime     Time        @map("end_time")
+  rate        SmallInt?
+  observation VarChar?
+  doctor      Doctors     @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "appointments_doctor_id_fkey")
+  patient     Patients?   @relation(fields: [patientId], references: [id], onDelete: SetNull, onUpdate: Cascade, map: "appointments_patient_id_fkey")
+
+  @@rls
+  @@map("appointments")
+}
+
+model MedicalRecords {
+  id            SmallInt    @id(map: "medical_records_pkey") @default(autoincrement())
+  createdAt     Timestamptz @default(now()) @map("created_at")
+  patientId     SmallInt    @unique(map: "medical_records_patient_id_key") @map("patient_id")
+  weight        SmallInt?
+  height        SmallInt?
+  skinColor     VarChar?    @map("skin_color")
+  heartDisease  Boolean?    @map("heart_disease")
+  diabetes      Boolean?
+  smoker        Boolean?
+  cancerHistory Boolean?    @map("cancer_history")
+  drinker       Boolean?
+  disabilities  Boolean?
+  allergies     VarChar[]?  @noCheck(elementNotNull)
+  medicines     VarChar[]?  @noCheck(elementNotNull)
+  observations  VarChar?
+  patient       Patients    @relation(fields: [patientId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "medical_records_patient_id_fkey")
+
+  @@rls
+  @@map("medical_records")
+}
+
+model PrismaMigrations {
+  id                VarChar(36)  @id(map: "_prisma_migrations_pkey")
+  checksum          VarChar(64)
+  finishedAt        Timestamptz? @map("finished_at")
+  migrationName     VarChar(255) @map("migration_name")
+  logs              String?
+  rolledBackAt      Timestamptz? @map("rolled_back_at")
+  startedAt         Timestamptz  @default(now()) @map("started_at")
+  appliedStepsCount Int          @default(0) @map("applied_steps_count")
+
+  @@map("_prisma_migrations")
+}
