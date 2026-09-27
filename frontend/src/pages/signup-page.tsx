@@ -5,14 +5,26 @@ type Insurance = { id: number; name: string };
 
 const DRAFT_KEY = "dochub.signupDraft";
 
+async function loadInsurances() {
+  for (let attempt = 0; attempt < 8; attempt++) {
+    try {
+      const response = await fetch("/api/insurances");
+      if (!response.ok) throw new Error("unavailable");
+      const data = (await response.json()) as { insurances?: Insurance[] };
+      return data.insurances ?? [];
+    } catch {
+      await new Promise((resolve) => setTimeout(resolve, 400));
+    }
+  }
+  return [];
+}
+
 export function SignupPage() {
   const navigate = useNavigate();
   const [insurances, setInsurances] = useState<Insurance[]>([]);
 
   useEffect(() => {
-    void fetch("/api/insurances")
-      .then((response) => response.json())
-      .then((data: { insurances?: Insurance[] }) => setInsurances(data.insurances ?? []));
+    void loadInsurances().then(setInsurances);
   }, []);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
