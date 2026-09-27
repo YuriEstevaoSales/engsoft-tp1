@@ -25,7 +25,7 @@ export class AuthService {
       const user = await db.transaction(async (tx) => {
         const created = await tx.orm.public.Users.select("id", "name", "email").create({
           email: input.email.trim().toLowerCase(), name: input.name.trim(),
-          cpf: input.cpf.trim(), birthday: input.birthday,
+          cpf: input.cpf.trim(), birthday: Temporal.PlainDate.from(input.birthday),
           phoneNumber: input.phoneNumber.trim(),
           stateAddress: (input.clinicState ?? input.stateAddress).trim(),
           city: (input.clinicCity ?? input.city)?.trim() || null,
