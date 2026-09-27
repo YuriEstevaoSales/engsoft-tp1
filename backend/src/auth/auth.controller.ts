@@ -3,7 +3,7 @@ import { AuthService, RegisterDoctorInput } from "./auth.service.js";
 
 @Controller("api/auth")
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  private readonly authService = new AuthService();
 
   @Post("register-doctor")
   async registerDoctor(@Body() body: RegisterDoctorInput) {
