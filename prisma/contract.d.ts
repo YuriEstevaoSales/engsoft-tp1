@@ -1357,6 +1357,10 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'MedicalRecords';
     };
+    readonly medical_specialties: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'MedicalSpecialties';
+    };
     readonly patients: { readonly namespace: 'public' & NamespaceId; readonly model: 'Patients' };
     readonly users: { readonly namespace: 'public' & NamespaceId; readonly model: 'Users' };
   };
@@ -1522,6 +1526,18 @@ type ContractBase = Omit<
                 readonly on: {
                   readonly localFields: readonly ['id'];
                   readonly targetFields: readonly ['doctorId'];
+                };
+              };
+              readonly medicalSpecialties: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'MedicalSpecialties';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['specialty'];
+                  readonly targetFields: readonly ['medicalSpecialty'];
                 };
               };
               readonly user: {
@@ -1700,6 +1716,44 @@ type ContractBase = Omit<
                 readonly skinColor: { readonly column: 'skin_color' };
                 readonly smoker: { readonly column: 'smoker' };
                 readonly weight: { readonly column: 'weight' };
+              };
+            };
+          };
+          readonly MedicalSpecialties: {
+            readonly fields: {
+              readonly accessFrequency: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+              };
+              readonly medicalSpecialty: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'sql/varchar@1' };
+              };
+            };
+            readonly relations: {
+              readonly doctors: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Doctors';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['medicalSpecialty'];
+                  readonly targetFields: readonly ['specialty'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'medical_specialties';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly accessFrequency: { readonly column: 'access_frequency' };
+                readonly id: { readonly column: 'id' };
+                readonly medicalSpecialty: { readonly column: 'medical_specialty' };
               };
             };
           };
