@@ -39,7 +39,7 @@ export class AuthService {
           addressComplement: input.addressComplement?.trim() || null,
           specialty: input.specialty, experienceTime: input.formationDate || null,
           remoteAppointments: true,
-          insurances: Number.isFinite(insurance) ? [insurance] : null,
+          insurances: insurance !== null && Number.isFinite(insurance) ? [insurance] : null,
         });
         return created;
       });

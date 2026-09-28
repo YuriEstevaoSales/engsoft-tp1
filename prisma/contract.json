@@ -24,6 +24,10 @@
       "model": "MedicalRecords",
       "namespace": "public"
     },
+    "medical_specialties": {
+      "model": "MedicalSpecialties",
+      "namespace": "public"
+    },
     "patients": {
       "model": "Patients",
       "namespace": "public"
@@ -287,6 +291,22 @@
                 },
                 "to": {
                   "model": "Appointments",
+                  "namespace": "public"
+                }
+              },
+              "medicalSpecialties": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "specialty"
+                  ],
+                  "targetFields": [
+                    "medicalSpecialty"
+                  ]
+                },
+                "to": {
+                  "model": "MedicalSpecialties",
                   "namespace": "public"
                 }
               },
@@ -591,6 +611,63 @@
               },
               "namespaceId": "public",
               "table": "medical_records"
+            }
+          },
+          "MedicalSpecialties": {
+            "fields": {
+              "accessFrequency": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int8@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int8@1",
+                  "kind": "scalar"
+                }
+              },
+              "medicalSpecialty": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "doctors": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "medicalSpecialty"
+                  ],
+                  "targetFields": [
+                    "specialty"
+                  ]
+                },
+                "to": {
+                  "model": "Doctors",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "accessFrequency": {
+                  "column": "access_frequency"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "medicalSpecialty": {
+                  "column": "medical_specialty"
+                }
+              },
+              "namespaceId": "public",
+              "table": "medical_specialties"
             }
           },
           "Patients": {
@@ -1001,6 +1078,11 @@
               "namespaceId": "public",
               "tableName": "medical_records"
             },
+            "medical_specialties": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "medical_specialties"
+            },
             "patients": {
               "kind": "rls",
               "namespaceId": "public",
@@ -1292,6 +1374,25 @@
               },
               "foreignKeys": [
                 {
+                  "name": "doctors_specialty_fkey",
+                  "onDelete": "setNull",
+                  "onUpdate": "cascade",
+                  "source": {
+                    "columns": [
+                      "specialty"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "doctors"
+                  },
+                  "target": {
+                    "columns": [
+                      "medical_specialty"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "medical_specialties"
+                  }
+                },
+                {
                   "name": "doctors_user_id_fkey",
                   "onDelete": "cascade",
                   "onUpdate": "cascade",
@@ -1501,6 +1602,45 @@
                 }
               ]
             },
+            "medical_specialties": {
+              "columns": {
+                "access_frequency": {
+                  "codecId": "pg/int8@1",
+                  "nativeType": "int8",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/int8@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int8",
+                  "nullable": false
+                },
+                "medical_specialty": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ],
+                "name": "medical_specialties_pkey"
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "medical_specialty"
+                  ],
+                  "name": "medical_specialties_specialty_name_key"
+                }
+              ]
+            },
             "patients": {
               "columns": {
                 "created_at": {
@@ -1692,7 +1832,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "918dc5ae341d53b243a3a35bf71315cc6e59ecc404652951e1f62924d1700b8e"
+    "storageHash": "c3c8f1d6509d34a5352a49eeab82dffdae5b2447e35a69b01217e6e9f3d3ae81"
   },
   "capabilities": {
     "postgres": {

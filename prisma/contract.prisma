@@ -1,6 +1,16 @@
 // use prisma-8
 // Contract inferred from the live database schema. Edit as needed, then run `prisma contract emit`.
 
+model MedicalSpecialties {
+  id               BigInt    @id(map: "medical_specialties_pkey") @default(autoincrement())
+  medicalSpecialty VarChar   @unique(map: "medical_specialties_specialty_name_key") @map("medical_specialty")
+  accessFrequency  BigInt?   @map("access_frequency")
+  doctors          Doctors[]
+
+  @@rls
+  @@map("medical_specialties")
+}
+
 model Users {
   id                SmallInt    @id(map: "users_pkey") @default(autoincrement())
   createdAt         Timestamptz @default(now()) @map("created_at")
@@ -37,6 +47,7 @@ model Doctors {
   insurances         SmallInt[]?   @noCheck(elementNotNull)
   specialty          String?
   appointments       Appointments?
+  medicalSpecialties MedicalSpecialties? @relation(fields: [specialty], references: [medicalSpecialty], onDelete: SetNull, onUpdate: Cascade, map: "doctors_specialty_fkey", index: false)
   user               Users         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "doctors_user_id_fkey", index: false)
 
   @@rls

@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'918dc5ae341d53b243a3a35bf71315cc6e59ecc404652951e1f62924d1700b8e'>;
+  StorageHashBase<'c3c8f1d6509d34a5352a49eeab82dffdae5b2447e35a69b01217e6e9f3d3ae81'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -298,6 +298,11 @@ export type FieldOutputTypes = {
       readonly smoker: CodecTypes['pg/bool@1']['output'] | null;
       readonly weight: CodecTypes['pg/int2@1']['output'] | null;
     };
+    readonly MedicalSpecialties: {
+      readonly accessFrequency: CodecTypes['pg/int8@1']['output'] | null;
+      readonly id: CodecTypes['pg/int8@1']['output'];
+      readonly medicalSpecialty: CodecTypes['sql/varchar@1']['output'];
+    };
     readonly Patients: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/int2@1']['output'];
@@ -380,6 +385,11 @@ export type FieldInputTypes = {
       readonly skinColor: CodecTypes['sql/varchar@1']['input'] | null;
       readonly smoker: CodecTypes['pg/bool@1']['input'] | null;
       readonly weight: CodecTypes['pg/int2@1']['input'] | null;
+    };
+    readonly MedicalSpecialties: {
+      readonly accessFrequency: CodecTypes['pg/int8@1']['input'] | null;
+      readonly id: CodecTypes['pg/int8@1']['input'];
+      readonly medicalSpecialty: CodecTypes['sql/varchar@1']['input'];
     };
     readonly Patients: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -473,6 +483,11 @@ export type StorageColumnTypes = {
       readonly skin_color: CodecTypes['sql/varchar@1']['output'] | null;
       readonly smoker: CodecTypes['pg/bool@1']['output'] | null;
       readonly weight: CodecTypes['pg/int2@1']['output'] | null;
+    };
+    readonly medical_specialties: {
+      readonly access_frequency: CodecTypes['pg/int8@1']['output'] | null;
+      readonly id: CodecTypes['pg/int8@1']['output'];
+      readonly medical_specialty: CodecTypes['sql/varchar@1']['output'];
     };
     readonly patients: {
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
