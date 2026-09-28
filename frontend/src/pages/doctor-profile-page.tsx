@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { readSession } from "../auth/session.js";
+import {
+  formControlClass,
+  formDividerClass,
+  formErrorClass,
+  formFieldClass,
+} from "../styles/form-classes.js";
 
 type Profile = {
   name: string; email: string; specialty: string | null; description: string | null;
@@ -31,38 +37,38 @@ export function DoctorProfilePage() {
 
   if (!session) return null;
   return (
-    <main className="signup-form-wrap">
-      <h2>seu perfil</h2>
-      <p>{session.email} — sessão ativa</p>
-      {error ? <p className="signup-error">{error}</p> : null}
+    <main className="mx-auto my-8 mb-12 w-[min(760px,calc(100%-40px))]">
+      <h2 className="mb-2 text-xl font-bold text-[#1f3d36]">seu perfil</h2>
+      <p className="mb-5 text-sm text-[#64756f]">{session.email} — sessão ativa</p>
+      {error ? <p className={`${formErrorClass} mb-4`} role="alert">{error}</p> : null}
       {profile ? (
         <form>
-          <label className="pill-field"><span>Nome</span><input readOnly value={profile.name} /></label>
-          <label className="pill-field"><span>Especialidade</span>
-            <input readOnly value={profile.specialty ?? ""} /></label>
-          <label className="pill-field"><span>Descrição</span>
-            <textarea readOnly rows={3} value={profile.description ?? ""} /></label>
-          <label className="pill-field"><span>Preço da consulta</span>
-            <input readOnly value={profile.appointmentPrice ?? ""} /></label>
-          <p>{profile.remoteAppointments ? "Atendo apenas remotamente" : "Atendimento presencial"}</p>
-          <div className="signup-divider">seu consultório</div>
-          <div className="pill-row">
-            <label className="pill-field"><span>Estado</span>
-              <input readOnly value={profile.stateAddress} /></label>
-            <label className="pill-field"><span>Cidade</span>
-              <input readOnly value={profile.city ?? ""} /></label>
+          <label className={formFieldClass}><span>Nome</span><input className={formControlClass} readOnly value={profile.name} /></label>
+          <label className={formFieldClass}><span>Especialidade</span>
+            <input className={formControlClass} readOnly value={profile.specialty ?? ""} /></label>
+          <label className={formFieldClass}><span>Descrição</span>
+            <textarea className={`${formControlClass} rounded-2xl`} readOnly rows={3} value={profile.description ?? ""} /></label>
+          <label className={formFieldClass}><span>Preço da consulta</span>
+            <input className={formControlClass} readOnly value={profile.appointmentPrice ?? ""} /></label>
+          <p className="mb-4 text-sm text-[#64756f]">{profile.remoteAppointments ? "Atendo apenas remotamente" : "Atendimento presencial"}</p>
+          <div className={formDividerClass}>seu consultório</div>
+          <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
+            <label className={formFieldClass}><span>Estado</span>
+              <input className={formControlClass} readOnly value={profile.stateAddress} /></label>
+            <label className={formFieldClass}><span>Cidade</span>
+              <input className={formControlClass} readOnly value={profile.city ?? ""} /></label>
           </div>
-          <label className="pill-field"><span>Logradouro</span>
-            <input readOnly value={profile.street} /></label>
-          <div className="pill-row">
-            <label className="pill-field"><span>Número</span>
-              <input readOnly value={profile.addressNumber} /></label>
-            <label className="pill-field"><span>Complemento</span>
-              <input readOnly value={profile.addressComplement ?? ""} /></label>
+          <label className={formFieldClass}><span>Logradouro</span>
+            <input className={formControlClass} readOnly value={profile.street} /></label>
+          <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
+            <label className={formFieldClass}><span>Número</span>
+              <input className={formControlClass} readOnly value={profile.addressNumber} /></label>
+            <label className={formFieldClass}><span>Complemento</span>
+              <input className={formControlClass} readOnly value={profile.addressComplement ?? ""} /></label>
           </div>
         </form>
       ) : null}
-      <p><Link to="/">Voltar ao início</Link></p>
+      <p className="mt-5"><Link className="font-semibold text-dochub-teal underline" to="/">Voltar ao início</Link></p>
     </main>
   );
 }
