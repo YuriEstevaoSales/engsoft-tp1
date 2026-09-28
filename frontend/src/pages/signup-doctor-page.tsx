@@ -1,14 +1,34 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { saveSession } from "../auth/session.js";
+import { loadMedicalSpecialties } from "../routes/specialties.js";
 import { SIGNUP_DRAFT_KEY } from "../routes/signup-draft.js";
-
-const SPECIALTIES = ["Clínica Geral", "Cardiologia", "Dermatologia", "Pediatria", "Ortopedia"];
+import {
+  formButtonClass,
+  formControlClass,
+  formDividerClass,
+  formErrorClass,
+  formFieldClass,
+} from "../styles/form-classes.js";
 
 export function SignupDoctorPage() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const [specialties, setSpecialties] = useState<string[]>([]);
+  const [specialtiesLoading, setSpecialtiesLoading] = useState(true);
+  const [specialtiesError, setSpecialtiesError] = useState("");
+
+  useEffect(() => {
+    void loadMedicalSpecialties()
+      .then(setSpecialties)
+      .catch((loadError: unknown) => {
+        setSpecialtiesError(
+          loadError instanceof Error ? loadError.message : "Não foi possível carregar as especialidades.",
+        );
+      })
+      .finally(() => setSpecialtiesLoading(false));
+  }, []);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,40 +64,42 @@ export function SignupDoctorPage() {
   }
 
   return (
-    <main className="signup-form-wrap">
-      <h2>Continue seu cadastro</h2>
+    <main className="mx-auto my-8 mb-12 w-[min(760px,calc(100%-40px))]">
+      <h2 className="mb-5 text-[1.05rem] font-semibold text-[#1f3d36]">Continue seu cadastro</h2>
       <form onSubmit={(event) => void onSubmit(event)}>
-        <div className="signup-photo" aria-hidden="true" />
-        <label className="pill-field">
+        <div className="mx-auto mb-2 size-14 rounded-full bg-dochub-teal" aria-hidden="true" />
+        <label className={formFieldClass}>
           <span>Especialidade</span>
-          <select name="specialty" required>
-            {SPECIALTIES.map((item) => <option key={item}>{item}</option>)}
+          <select className={formControlClass} name="specialty" required disabled={specialtiesLoading || Boolean(specialtiesError)}>
+            <option value="">Selecione uma especialidade</option>
+            {specialties.map((item) => <option key={item} value={item}>{item}</option>)}
           </select>
         </label>
-        <div className="pill-row">
-          <label className="pill-field"><span>CRM</span><input name="crm" required /></label>
-          <label className="pill-field"><span>Data de formação</span><input name="formationDate" type="date" /></label>
+        {specialtiesError ? <p className={formErrorClass} role="alert">{specialtiesError}</p> : null}
+        <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
+          <label className={formFieldClass}><span>CRM</span><input className={formControlClass} name="crm" required /></label>
+          <label className={formFieldClass}><span>Data de formação</span><input className={formControlClass} name="formationDate" type="date" /></label>
         </div>
-        <div className="signup-divider">Sobre seu local de atendimento</div>
-        <label className="pill-field"><span>CEP</span><input name="cep" /></label>
-        <div className="pill-row">
-          <label className="pill-field"><span>Estado</span><input name="clinicState" required /></label>
-          <label className="pill-field"><span>Cidade</span><input name="clinicCity" /></label>
+        <div className={formDividerClass}>Sobre seu local de atendimento</div>
+        <label className={formFieldClass}><span>CEP</span><input className={formControlClass} name="cep" /></label>
+        <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
+          <label className={formFieldClass}><span>Estado</span><input className={formControlClass} name="clinicState" required /></label>
+          <label className={formFieldClass}><span>Cidade</span><input className={formControlClass} name="clinicCity" /></label>
         </div>
-        <label className="pill-field"><span>Logradouro</span><input name="street" required /></label>
-        <div className="pill-row">
-          <label className="pill-field"><span>Número</span><input name="addressNumber" type="number" required /></label>
-          <label className="pill-field"><span>Complemento</span><input name="addressComplement" /></label>
+        <label className={formFieldClass}><span>Logradouro</span><input className={formControlClass} name="street" required /></label>
+        <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
+          <label className={formFieldClass}><span>Número</span><input className={formControlClass} name="addressNumber" type="number" required /></label>
+          <label className={formFieldClass}><span>Complemento</span><input className={formControlClass} name="addressComplement" /></label>
         </div>
-        <div className="pill-row">
-          <label className="pill-field"><span>Telefone</span><input name="clinicPhone" /></label>
-          <label className="pill-field"><span>Celular</span><input name="mobile" /></label>
+        <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
+          <label className={formFieldClass}><span>Telefone</span><input className={formControlClass} name="clinicPhone" /></label>
+          <label className={formFieldClass}><span>Celular</span><input className={formControlClass} name="mobile" /></label>
         </div>
-        <div className="signup-divider">Crie sua senha</div>
-        <label className="pill-field"><span>Senha</span><input name="password" type="password" required minLength={6} /></label>
-        <label className="pill-field"><span>Confirmação da senha</span><input name="confirm" type="password" required minLength={6} /></label>
-        {error ? <p className="signup-error">{error}</p> : null}
-        <button className="signup-submit" type="submit" disabled={pending}>
+        <div className={formDividerClass}>Crie sua senha</div>
+        <label className={formFieldClass}><span>Senha</span><input className={formControlClass} name="password" type="password" required minLength={6} /></label>
+        <label className={formFieldClass}><span>Confirmação da senha</span><input className={formControlClass} name="confirm" type="password" required minLength={6} /></label>
+        {error ? <p className={formErrorClass} role="alert">{error}</p> : null}
+        <button className={formButtonClass} type="submit" disabled={pending}>
           {pending ? "Salvando..." : "Finalizar cadastro"}
         </button>
       </form>
