@@ -572,6 +572,11 @@ export type StorageColumnInputTypes = {
       readonly smoker: CodecTypes['pg/bool@1']['input'] | null;
       readonly weight: CodecTypes['pg/int2@1']['input'] | null;
     };
+    readonly medical_specialties: {
+      readonly access_frequency: CodecTypes['pg/int8@1']['input'] | null;
+      readonly id: CodecTypes['pg/int8@1']['input'];
+      readonly medical_specialty: CodecTypes['sql/varchar@1']['input'];
+    };
     readonly patients: {
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/int2@1']['input'];
@@ -626,8 +631,9 @@ export namespace Models {
     street: CodecTypes['sql/varchar@1']['output'];
     userId: CodecTypes['pg/int2@1']['output'];
     appointments: public_Appointments | null;
+    medicalSpecialties: public_MedicalSpecialties | null;
     user: public_Users;
-    readonly [RelationKeys]?: 'appointments' | 'user';
+    readonly [RelationKeys]?: 'appointments' | 'medicalSpecialties' | 'user';
   };
   export type public_Insurances = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -654,6 +660,13 @@ export namespace Models {
     weight: CodecTypes['pg/int2@1']['output'] | null;
     patient: public_Patients;
     readonly [RelationKeys]?: 'patient';
+  };
+  export type public_MedicalSpecialties = {
+    accessFrequency: CodecTypes['pg/int8@1']['output'] | null;
+    id: CodecTypes['pg/int8@1']['output'];
+    medicalSpecialty: CodecTypes['sql/varchar@1']['output'];
+    doctors: public_Doctors[];
+    readonly [RelationKeys]?: 'doctors';
   };
   export type public_Patients = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -702,6 +715,7 @@ export declare const models: {
     Doctors: Models.public_Doctors;
     Insurances: Models.public_Insurances;
     MedicalRecords: Models.public_MedicalRecords;
+    MedicalSpecialties: Models.public_MedicalSpecialties;
     Patients: Models.public_Patients;
     PrismaMigrations: Models.public_PrismaMigrations;
     Users: Models.public_Users;
@@ -974,6 +988,19 @@ type ContractBase = Omit<
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'doctors';
+                    readonly columns: readonly ['specialty'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'medical_specialties';
+                    readonly columns: readonly ['medical_specialty'];
+                  };
+                  readonly name: 'doctors_specialty_fkey';
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'doctors';
                     readonly columns: readonly ['user_id'];
                   };
                   readonly target: {
@@ -1124,6 +1151,41 @@ type ContractBase = Omit<
                   readonly name: 'medical_records_patient_id_fkey';
                 },
               ];
+            };
+            readonly medical_specialties: {
+              columns: {
+                readonly access_frequency: {
+                  readonly nativeType: 'int8';
+                  readonly codecId: 'pg/int8@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'int8';
+                  readonly codecId: 'pg/int8@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'function';
+                    readonly expression: 'autoincrement()';
+                  };
+                };
+                readonly medical_specialty: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: {
+                readonly columns: readonly ['id'];
+                readonly name: 'medical_specialties_pkey';
+              };
+              uniques: readonly [
+                {
+                  readonly columns: readonly ['medical_specialty'];
+                  readonly name: 'medical_specialties_specialty_name_key';
+                },
+              ];
+              indexes: readonly [];
+              foreignKeys: readonly [];
             };
             readonly patients: {
               columns: {
