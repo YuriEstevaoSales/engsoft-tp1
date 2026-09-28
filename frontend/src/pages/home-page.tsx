@@ -1,17 +1,54 @@
+import { useEffect, useState } from "react";
+import { HomeProof } from "./home-proof.js";
+import { HomeSearch } from "./home-search.js";
+import { HomeSteps } from "./home-steps.js";
+import { loadMedicalSpecialties } from "../routes/specialties.js";
+
 export function HomePage() {
+  const [specialties, setSpecialties] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    void loadMedicalSpecialties()
+      .then((items) => { if (active) setSpecialties(items); })
+      .catch((reason: unknown) => {
+        if (active) setError(reason instanceof Error ? reason.message : "Não foi possível carregar as especialidades.");
+      })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  function selectSpecialty(value: string) {
+    setSearch(value);
+    setSelected(value);
+  }
+
   return (
-    <main className="home-hero">
-      <h1>Que prazer ter você por aqui!</h1>
-      <p>Encontre médicos, marque consultas e cuide da sua saúde com o DocHub.</p>
+    <main className="text-[#1c3435]">
+      <HomeSearch
+        specialties={specialties}
+        loading={loading}
+        error={error}
+        search={search}
+        selected={selected}
+        onSearchChange={(value) => { setSearch(value); setSelected(""); }}
+        onSelect={selectSpecialty}
+      />
+      <HomeSteps />
+      <HomeProof />
     </main>
   );
 }
 
 export function AboutPage() {
   return (
-    <main className="home-hero">
-      <h1>Sobre a marca</h1>
-      <p>O DocHub conecta pacientes e médicos em um só lugar.</p>
+    <main className="mx-auto my-12 w-[min(760px,calc(100%-40px))] text-dochub-ink">
+      <h1 className="text-4xl font-bold tracking-tight">Sobre a marca</h1>
+      <p className="mt-4 leading-relaxed text-[#64756f]">O DocHub conecta pacientes e médicos em um só lugar.</p>
     </main>
   );
 }
