@@ -11,17 +11,14 @@ import { TestPage, TestPageError } from "./pages/test-page.js";
 import { loadTestData } from "./routes/test-data.js";
 import { requireSignupDraft } from "./routes/signup-draft.js";
 import "./styles.css";
-import "./styles/layout.css";
-import "./styles/login.css";
-import "./styles/signup.css";
 
 const router = createBrowserRouter([
   { Component: () => <PublicLayout header="dark" />, children: [{ path: "/entrar", Component: LoginPage }] },
   { Component: () => <PublicLayout header="teal" />, children: [{ path: "/cadastro", Component: SignupPage }] },
+  { Component: () => <PublicLayout header="home" />, children: [{ path: "/", Component: HomePage }] },
   {
     Component: () => <PublicLayout header="light" />,
     children: [
-      { path: "/", Component: HomePage },
       { path: "/sobre", Component: AboutPage },
       { path: "/cadastro/dados", loader: requireSignupDraft, Component: SignupDoctorPage },
       { path: "/perfil", Component: DoctorProfilePage },
