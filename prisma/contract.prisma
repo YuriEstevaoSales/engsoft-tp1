@@ -4,7 +4,7 @@
 model MedicalSpecialties {
   id               BigInt    @id(map: "medical_specialties_pkey") @default(autoincrement())
   medicalSpecialty VarChar   @unique(map: "medical_specialties_specialty_name_key") @map("medical_specialty")
-  accessFrequency  BigInt?   @map("access_frequency")
+  accessFrequency  BigInt    @default(0) @map("access_frequency")
   doctors          Doctors[]
 
   @@rls

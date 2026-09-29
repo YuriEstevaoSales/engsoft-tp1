@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'c3c8f1d6509d34a5352a49eeab82dffdae5b2447e35a69b01217e6e9f3d3ae81'>;
+  StorageHashBase<'69af9fc0b4f5da9307c78d71a89ff7d4c8e4e2629ac3066ea8887996bd8041d6'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -299,7 +299,7 @@ export type FieldOutputTypes = {
       readonly weight: CodecTypes['pg/int2@1']['output'] | null;
     };
     readonly MedicalSpecialties: {
-      readonly accessFrequency: CodecTypes['pg/int8@1']['output'] | null;
+      readonly accessFrequency: CodecTypes['pg/int8@1']['output'];
       readonly id: CodecTypes['pg/int8@1']['output'];
       readonly medicalSpecialty: CodecTypes['sql/varchar@1']['output'];
     };
@@ -387,7 +387,7 @@ export type FieldInputTypes = {
       readonly weight: CodecTypes['pg/int2@1']['input'] | null;
     };
     readonly MedicalSpecialties: {
-      readonly accessFrequency: CodecTypes['pg/int8@1']['input'] | null;
+      readonly accessFrequency: CodecTypes['pg/int8@1']['input'];
       readonly id: CodecTypes['pg/int8@1']['input'];
       readonly medicalSpecialty: CodecTypes['sql/varchar@1']['input'];
     };
@@ -485,7 +485,7 @@ export type StorageColumnTypes = {
       readonly weight: CodecTypes['pg/int2@1']['output'] | null;
     };
     readonly medical_specialties: {
-      readonly access_frequency: CodecTypes['pg/int8@1']['output'] | null;
+      readonly access_frequency: CodecTypes['pg/int8@1']['output'];
       readonly id: CodecTypes['pg/int8@1']['output'];
       readonly medical_specialty: CodecTypes['sql/varchar@1']['output'];
     };
@@ -573,7 +573,7 @@ export type StorageColumnInputTypes = {
       readonly weight: CodecTypes['pg/int2@1']['input'] | null;
     };
     readonly medical_specialties: {
-      readonly access_frequency: CodecTypes['pg/int8@1']['input'] | null;
+      readonly access_frequency: CodecTypes['pg/int8@1']['input'];
       readonly id: CodecTypes['pg/int8@1']['input'];
       readonly medical_specialty: CodecTypes['sql/varchar@1']['input'];
     };
@@ -662,7 +662,7 @@ export namespace Models {
     readonly [RelationKeys]?: 'patient';
   };
   export type public_MedicalSpecialties = {
-    accessFrequency: CodecTypes['pg/int8@1']['output'] | null;
+    accessFrequency: CodecTypes['pg/int8@1']['output'];
     id: CodecTypes['pg/int8@1']['output'];
     medicalSpecialty: CodecTypes['sql/varchar@1']['output'];
     doctors: public_Doctors[];
@@ -1157,7 +1157,11 @@ type ContractBase = Omit<
                 readonly access_frequency: {
                   readonly nativeType: 'int8';
                   readonly codecId: 'pg/int8@1';
-                  readonly nullable: true;
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int8@1', '0'>;
+                  };
                 };
                 readonly id: {
                   readonly nativeType: 'int8';
@@ -1722,7 +1726,7 @@ type ContractBase = Omit<
           readonly MedicalSpecialties: {
             readonly fields: {
               readonly accessFrequency: {
-                readonly nullable: true;
+                readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
               };
               readonly id: {

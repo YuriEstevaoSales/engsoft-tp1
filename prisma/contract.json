@@ -616,7 +616,7 @@
           "MedicalSpecialties": {
             "fields": {
               "accessFrequency": {
-                "nullable": true,
+                "nullable": false,
                 "type": {
                   "codecId": "pg/int8@1",
                   "kind": "scalar"
@@ -1606,8 +1606,12 @@
               "columns": {
                 "access_frequency": {
                   "codecId": "pg/int8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
                   "nativeType": "int8",
-                  "nullable": true
+                  "nullable": false
                 },
                 "id": {
                   "codecId": "pg/int8@1",
@@ -1832,7 +1836,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "c3c8f1d6509d34a5352a49eeab82dffdae5b2447e35a69b01217e6e9f3d3ae81"
+    "storageHash": "69af9fc0b4f5da9307c78d71a89ff7d4c8e4e2629ac3066ea8887996bd8041d6"
   },
   "capabilities": {
     "postgres": {
