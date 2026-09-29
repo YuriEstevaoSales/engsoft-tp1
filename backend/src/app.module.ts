@@ -6,6 +6,8 @@ import { InsurancesController } from "./controllers/insurances.controller.js";
 import { MedicalSpecialtiesController } from "./controllers/medical-specialties.controller.js";
 import { MedicalRecordsController } from "./controllers/medical-records.controller.js";
 import { PatientsController } from "./controllers/patients.controller.js";
+import { QuestionsController } from "./controllers/questions.controller.js";
+import { QuestionsService } from "./controllers/questions.service.js";
 import { UsersController } from "./controllers/users.controller.js";
 
 @Module({
@@ -17,7 +19,9 @@ import { UsersController } from "./controllers/users.controller.js";
     MedicalSpecialtiesController,
     MedicalRecordsController,
     PatientsController,
+    QuestionsController,
     UsersController,
   ],
+  providers: [QuestionsService],
 })
 export class AppModule {}
