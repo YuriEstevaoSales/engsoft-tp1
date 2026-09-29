@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { HomeProof } from "./home-proof.js";
 import { HomeSearch } from "./home-search.js";
 import { HomeSteps } from "./home-steps.js";
 import { loadMedicalSpecialties } from "../routes/specialties.js";
+import { createMedicalSpecialtySlug } from "../routes/doctor-search.js";
 
 export function HomePage() {
+  const navigate = useNavigate();
   const [specialties, setSpecialties] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -37,6 +40,7 @@ export function HomePage() {
         selected={selected}
         onSearchChange={(value) => { setSearch(value); setSelected(""); }}
         onSelect={selectSpecialty}
+        onSearch={(specialty) => navigate(`/encontrar-medico-${createMedicalSpecialtySlug(specialty)}`)}
       />
       <HomeSteps />
       <HomeProof />

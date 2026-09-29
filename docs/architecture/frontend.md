@@ -11,4 +11,6 @@ The frontend uses **Tailwind CSS v4** for styling. Components and pages use Tail
 
 Use Tailwind classes in JSX for layout, responsive behavior, colors, typography, and interaction states. Put reusable class strings shared between forms in `frontend/src/styles/form-classes.ts`; reserve `styles.css` for the Tailwind import, theme tokens, and genuinely global base styles.
 
+The home-page specialty search navigates to `/encontrar-medico-{slug}`. The results page resolves that slug against the medical-specialty catalog and loads matching doctors. Calendar dates navigate to `/agendar/:doctorId?date=YYYY-MM-DD`, currently a placeholder for the future scheduling flow.
+
 Build the frontend and type-check the project with `npm run build`.
