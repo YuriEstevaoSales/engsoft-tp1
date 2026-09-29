@@ -129,3 +129,13 @@ model PrismaMigrations {
 
   @@map("_prisma_migrations")
 }
+
+model Questions {
+  id        Int         @id(map: "questions_pkey") @default(autoincrement())
+  question  String
+  createdAt Timestamptz @default(now()) @map("created_at")
+
+  @@index([createdAt, id], map: "questions_created_at_id_idx")
+  @@rls
+  @@map("questions")
+}
