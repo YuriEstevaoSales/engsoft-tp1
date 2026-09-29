@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router";
 import { buildAppointmentPath, formatCalendarMonth, isWeekendDate } from "../../routes/doctor-search.js";
 

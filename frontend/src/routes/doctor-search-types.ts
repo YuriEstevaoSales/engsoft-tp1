@@ -39,4 +39,4 @@ export const BRAZILIAN_STATES = [
   ["SP", "São Paulo"], ["SE", "Sergipe"], ["TO", "Tocantins"],
 ] as const;
 
-export const DOCTOR_SEARCH_ROUTE_PATH = "/encontrar-medico-:specialty";
+export const DOCTOR_SEARCH_ROUTE_PATH = "/:specialty";

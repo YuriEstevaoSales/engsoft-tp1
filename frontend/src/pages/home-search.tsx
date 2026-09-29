@@ -12,7 +12,6 @@ type HomeSearchProps = {
   selected: string;
   onSearchChange: (value: string) => void;
   onSelect: (value: string) => void;
-  onSearch: (value: string) => void;
 };
 function SearchIcon() {
   return (
@@ -24,7 +23,6 @@ function SearchIcon() {
 }
 export function HomeSearch({
   specialties, loading, error, search, selected, onSearchChange, onSelect,
-  onSearch,
 }: HomeSearchProps) {
   const matching = filterMedicalSpecialties(specialties, search);
   const searchIsOpen = search.trim().length > 0 && !selected;
@@ -32,7 +30,7 @@ export function HomeSearch({
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const match = findMedicalSpecialty(specialties, search);
-    if (match) onSearch(match);
+    if (match) onSelect(match);
   }
   return (
     <section

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { matchRoutes } from "react-router";
 import {
   buildAppointmentPath,
   formatCalendarMonth,
@@ -8,6 +9,7 @@ import {
 import { getVisiblePageNumbers } from "./doctor-search-pagination.js";
 import {
   createMedicalSpecialtySlug,
+  DOCTOR_SEARCH_ROUTE_PATH,
   extractMedicalSpecialtySlug,
   resolveMedicalSpecialtySlug,
 } from "./doctor-search-slugs.js";
@@ -25,9 +27,11 @@ test("creates accent-insensitive specialty slugs and resolves them from the cata
 });
 
 test("matches the hyphenated doctor-search URL through its dynamic route segment", () => {
-  const segment = "encontrar-medico-ginecologia";
-  const slug = extractMedicalSpecialtySlug(segment);
-  assert.equal(slug, "ginecologia");
+  const match = matchRoutes(
+    [{ path: DOCTOR_SEARCH_ROUTE_PATH }],
+    "/encontrar-medico-ginecologia",
+  );
+  assert.equal(match?.at(-1)?.params["specialty"], "encontrar-medico-ginecologia");
 });
 
 test("builds an appointment destination with the selected doctor and local date", () => {
