@@ -47,6 +47,7 @@ model Doctors {
   insurances         SmallInt[]?   @noCheck(elementNotNull)
   specialty          String?
   appointments       Appointments?
+  answers            Answers[]
   medicalSpecialties MedicalSpecialties? @relation(fields: [specialty], references: [medicalSpecialty], onDelete: SetNull, onUpdate: Cascade, map: "doctors_specialty_fkey", index: false)
   user               Users         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "doctors_user_id_fkey", index: false)
 
@@ -134,8 +135,25 @@ model Questions {
   id        Int         @id(map: "questions_pkey") @default(autoincrement())
   question  String
   createdAt Timestamptz @default(now()) @map("created_at")
+  answers   Answers[]
 
   @@index([createdAt, id], map: "questions_created_at_id_idx")
   @@rls
   @@map("questions")
+}
+
+model Answers {
+  id         Int         @id(map: "answers_pkey") @default(autoincrement())
+  questionId Int         @map("question_id")
+  doctorId   SmallInt    @map("doctor_id")
+  answer     String
+  createdAt  Timestamptz @default(now()) @map("created_at")
+  question   Questions   @relation(fields: [questionId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "answers_question_id_fkey")
+  doctor     Doctors     @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "answers_doctor_id_fkey")
+
+  @@unique([questionId, doctorId], map: "answers_question_doctor_key")
+  @@index([questionId, createdAt], map: "answers_question_created_at_idx")
+  @@index([doctorId], map: "answers_doctor_id_idx")
+  @@rls
+  @@map("answers")
 }
