@@ -35,7 +35,7 @@ test("rejects a valid signed identity that is not a doctor", async () => {
   const originalSecret = process.env["AUTH_TOKEN_SECRET"];
   process.env["AUTH_TOKEN_SECRET"] = TEST_SECRET;
   const first = mock.fn(async () => null);
-  const where = mock.fn(() => ({ first }));
+  const where = mock.fn((filter: { userId: number }) => ({ first, filter }));
   mock.method(db.orm.public.Doctors, "select", () => ({ where }));
   try {
     const token = await createDoctorToken(42);
@@ -52,7 +52,7 @@ test("attaches the verified doctor id to an authorized request", async () => {
   const originalSecret = process.env["AUTH_TOKEN_SECRET"];
   process.env["AUTH_TOKEN_SECRET"] = TEST_SECRET;
   const first = mock.fn(async () => ({ id: 9 }));
-  const where = mock.fn(() => ({ first }));
+  const where = mock.fn((filter: { userId: number }) => ({ first, filter }));
   mock.method(db.orm.public.Doctors, "select", () => ({ where }));
   try {
     const token = await createDoctorToken(42);
