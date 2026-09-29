@@ -9,10 +9,10 @@ import {
 import { getVisiblePageNumbers } from "./doctor-search-pagination.js";
 import {
   createMedicalSpecialtySlug,
-  DOCTOR_SEARCH_ROUTE_PATH,
   extractMedicalSpecialtySlug,
   resolveMedicalSpecialtySlug,
 } from "./doctor-search-slugs.js";
+import { DOCTOR_SEARCH_ROUTE_PATH } from "./doctor-search-types.js";
 
 test("creates accent-insensitive specialty slugs and resolves them from the catalog", () => {
   assert.equal(createMedicalSpecialtySlug("Ginecologia e Obstetrícia"), "ginecologia-e-obstetricia");
@@ -26,12 +26,12 @@ test("creates accent-insensitive specialty slugs and resolves them from the cata
   assert.equal(extractMedicalSpecialtySlug("encontrar-medico-"), null);
 });
 
-test("matches the hyphenated doctor-search URL through its dynamic route segment", () => {
+test("matches the doctor-search URL through its dynamic route segment", () => {
   const match = matchRoutes(
     [{ path: DOCTOR_SEARCH_ROUTE_PATH }],
-    "/encontrar-medico-ginecologia",
+    "/encontrar-medico/ginecologia",
   );
-  assert.equal(match?.at(-1)?.params["specialty"], "encontrar-medico-ginecologia");
+  assert.equal(match?.at(-1)?.params["specialty"], "ginecologia");
 });
 
 test("builds an appointment destination with the selected doctor and local date", () => {
