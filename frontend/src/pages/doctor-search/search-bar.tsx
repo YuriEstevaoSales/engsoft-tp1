@@ -1,5 +1,6 @@
-import { type FormEvent } from "react";
-import { createMedicalSpecialtySlug, filterMedicalSpecialties } from "../routes/doctor-search.js";
+import { type FormEvent, useEffect, useRef } from "react";
+import { createMedicalSpecialtySlug } from "../../routes/doctor-search.js";
+import { filterMedicalSpecialties } from "../../routes/specialties.js";
 
 interface SearchBarProps {
   query: string;
@@ -20,8 +21,18 @@ export function SearchBar({
   onSubmit,
   onSelectSpecialty,
 }: SearchBarProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function closeOnOutsideClick(event: MouseEvent) {
+      if (!containerRef.current?.contains(event.target as Node)) onOpenChange(false);
+    }
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+  }, [onOpenChange]);
+
   return (
-    <div className="relative z-10 mb-5">
+    <div className="relative z-10 mb-5" ref={containerRef}>
       <form className="flex items-center gap-3 rounded-full bg-[#b4b4b4] px-5 py-2" onSubmit={onSubmit} role="search">
         <label className="sr-only" htmlFor="search-input">Buscar especialidade</label>
         <span aria-hidden="true">⌕</span>
