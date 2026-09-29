@@ -28,7 +28,7 @@ services:
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/001-init.sql:ro
       - ./docker/postgres/migrations/002_medical_specialties.sql:/docker-entrypoint-initdb.d/002-medical_specialties.sql:ro
       - ./docker/postgres/migrations/003_specialty_access_frequency.sql:/docker-entrypoint-initdb.d/003_specialty_access_frequency.sql:ro
-        - ./docker/postgres/migrations/004_questions.sql:/docker-entrypoint-initdb.d/004-questions.sql:ro
+      - ./docker/postgres/migrations/004_questions.sql:/docker-entrypoint-initdb.d/004-questions.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U dochub -d dochub"]
       interval: 5s
