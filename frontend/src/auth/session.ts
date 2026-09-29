@@ -5,6 +5,7 @@ export type SessionUser = {
   name: string;
   email: string;
   role: "medico";
+  accessToken: string;
 };
 
 export function saveSession(user: SessionUser) {
