@@ -43,12 +43,21 @@ docker compose up --build
 ```
 
 Na primeira execução, o Compose cria um PostgreSQL local, inicializa as tabelas
-e inclui convênios de demonstração. Abra `http://localhost:5173/teste-banco`;
-a API também fica disponível em `http://localhost:3001/api/insurances` somente
-dentro da rede do Compose. Para encerrar, pressione `Ctrl+C` e execute
+e inclui convênios de demonstração. A aplicação usa `DATABASE_URL` do `.env`
+quando definida; sem ela, usa o PostgreSQL local do Compose. Abra `http://localhost:5173/teste-banco`;
+a API usa a porta definida por `API_PORT` no `.env` (padrão `3002`) e fica
+disponível como `http://app:${API_PORT}/api/insurances` somente dentro da rede
+do Compose. Para encerrar, pressione `Ctrl+C` e execute
 `docker compose down`. Os dados do banco permanecem no volume `postgres-data`
 entre reinicializações. As credenciais definidas no Compose são apenas para
 desenvolvimento local; não as use em produção.
+
+Se o volume `postgres-data` foi criado antes da inclusão do catálogo de
+especialidades, aplique a migração aditiva uma vez:
+
+```bash
+docker compose exec -T db psql -U dochub -d dochub < docker/postgres/migrations/002_medical_specialties.sql
+```
 
 ## Histórias de usuário
 
