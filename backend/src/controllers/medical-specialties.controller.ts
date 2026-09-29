@@ -9,7 +9,10 @@ export class MedicalSpecialtiesController {
   async list() {
     const rows = await db.orm.public.MedicalSpecialties
       .select("medicalSpecialty")
-      .orderBy((specialty) => specialty.medicalSpecialty.asc())
+      .orderBy([
+        (specialty) => specialty.accessFrequency.desc(),
+        (specialty) => specialty.medicalSpecialty.asc(),
+      ])
       .all();
 
     return { specialties: rows.map(({ medicalSpecialty }) => medicalSpecialty) };
