@@ -8,7 +8,7 @@ export class AuthController {
   @Post("register-doctor")
   async registerDoctor(@Body() body: RegisterDoctorInput) {
     try {
-      return { user: await this.authService.registerDoctor(body) };
+      return await this.authService.registerDoctor(body);
     } catch (error) {
       this.rethrow(error);
     }
@@ -17,7 +17,7 @@ export class AuthController {
   @Post("login")
   async login(@Body() body: { email?: string; password?: string }) {
     try {
-      return { user: await this.authService.login(body.email ?? "", body.password ?? "") };
+      return await this.authService.login(body.email ?? "", body.password ?? "");
     } catch (error) {
       this.rethrow(error);
     }

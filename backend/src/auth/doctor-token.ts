@@ -12,6 +12,10 @@ function getTokenSecret() {
   return new TextEncoder().encode(secret);
 }
 
+export function assertDoctorTokenConfiguration() {
+  getTokenSecret();
+}
+
 export async function createDoctorToken(userId: number): Promise<string> {
   if (!Number.isSafeInteger(userId) || userId < 1) throw new Error("Identidade médica inválida.");
   return new SignJWT({ role: "medico" })
