@@ -4,7 +4,7 @@ import { QuestionsService } from "./questions.service.js";
 
 @Controller("api/questions")
 export class QuestionsController {
-  constructor(private readonly questions: QuestionsService) {}
+  private readonly questions = new QuestionsService();
 
   @Public()
   @Get()

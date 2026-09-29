@@ -68,3 +68,16 @@ test("marks both question endpoints as intentionally public", () => {
   assert.equal(Reflect.getMetadata(IS_PUBLIC_KEY, QuestionsController.prototype.list), true);
   assert.equal(Reflect.getMetadata(IS_PUBLIC_KEY, QuestionsController.prototype.create), true);
 });
+
+test("serves the question list without constructor injection metadata", async () => {
+  const expected = { count: 0, questions: [] };
+  const list = mock.method(QuestionsService.prototype, "listPublicQuestions", async () => expected);
+
+  try {
+    const controller = Reflect.construct(QuestionsController, []) as QuestionsController;
+    assert.deepEqual(await controller.list(), expected);
+    assert.equal(list.mock.calls.length, 1);
+  } finally {
+    mock.restoreAll();
+  }
+});

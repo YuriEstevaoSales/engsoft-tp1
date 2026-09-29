@@ -1,11 +1,10 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException } from "@nestjs/common";
 import { db } from "../prisma/db.js";
 
 const QUESTIONS_PAGE_SIZE = 20;
 const QUESTION_MIN_LENGTH = 10;
 const QUESTION_MAX_LENGTH = 1000;
 
-@Injectable()
 export class QuestionsService {
   async listPublicQuestions() {
     const questions = await db.orm.public.Questions
