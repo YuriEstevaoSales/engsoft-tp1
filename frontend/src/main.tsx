@@ -8,6 +8,7 @@ import { SignupPage } from "./pages/signup-page.js";
 import { SignupDoctorPage } from "./pages/signup-doctor-page.js";
 import { DoctorProfilePage } from "./pages/doctor-profile-page.js";
 import { DoctorSearchPage } from "./pages/doctor-search-page.js";
+import { QuestionsPage } from "./pages/questions-page.js";
 import { TestPage, TestPageError } from "./pages/test-page.js";
 import { loadTestData } from "./routes/test-data.js";
 import { requireSignupDraft } from "./routes/signup-draft.js";
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/sobre", Component: AboutPage },
       { path: DOCTOR_SEARCH_ROUTE_PATH, Component: DoctorSearchPage },
+      { path: "/perguntas-respostas", Component: QuestionsPage },
       { path: "/cadastro/dados", loader: requireSignupDraft, Component: SignupDoctorPage },
       { path: "/perfil", Component: DoctorProfilePage },
     ],

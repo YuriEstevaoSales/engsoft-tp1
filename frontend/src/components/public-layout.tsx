@@ -10,6 +10,7 @@ const navItems = [
   { to: "/", label: "início" },
   { to: "/cadastro", label: "sou paciente" },
   { to: "/cadastro", label: "sou médico" },
+  { to: "/perguntas-respostas", label: "perguntas e respostas" },
   { to: "/sobre", label: "sobre a marca" },
 ];
 
@@ -65,6 +66,7 @@ export function PublicLayout({ header = "light" }: PublicLayoutProps) {
             <Link className="mb-1.5 block text-sm text-inherit no-underline" to="/" onClick={scrollToTop}>Início</Link>
             <Link className="mb-1.5 block text-sm text-inherit no-underline" to="/cadastro" onClick={scrollToTop}>Sou paciente</Link>
             <Link className="mb-1.5 block text-sm text-inherit no-underline" to="/cadastro" onClick={scrollToTop}>Sou médico</Link>
+            <Link className="mb-1.5 block text-sm text-inherit no-underline" to="/perguntas-respostas" onClick={scrollToTop}>Perguntas e respostas</Link>
             <Link className="mb-1.5 block text-sm text-inherit no-underline" to="/sobre" onClick={scrollToTop}>Sobre o DocHub</Link>
             <Link className="mb-1.5 block text-sm text-inherit no-underline" to="/entrar" onClick={scrollToTop}>Entrar</Link>
           </div>
