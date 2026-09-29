@@ -59,6 +59,17 @@ especialidades, aplique a migração aditiva uma vez:
 docker compose exec -T db psql -U dochub -d dochub < docker/postgres/migrations/002_medical_specialties.sql
 ```
 
+Para incluir a tabela de perguntas em um volume existente, aplique também:
+
+```bash
+docker compose exec -T db psql -U dochub -d dochub < docker/postgres/migrations/004_questions.sql
+```
+
+A página pública de perguntas fica em `/perguntas-respostas`. Qualquer pessoa
+pode publicar sem conta; as perguntas são exibidas imediatamente e ficam
+anônimas. A API e as regras de validação estão descritas em
+[`docs/api/questions.md`](docs/api/questions.md).
+
 ## Histórias de usuário
 
 Como paciente, eu gostaria de achar médicos próximos de mim.
