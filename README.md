@@ -163,3 +163,98 @@ classDef wip fill:#f3f4f6,stroke:#9ca3af,stroke-width:2px,stroke-dasharray: 5 5,
     Medico --> UC9
     Medico --> UC10
     Medico --> UC11
+```
+### 2. Diagrama de Classes
+*Estrutura das entidades do banco de dados e suas relações.*
+```mermaid
+classDiagram
+    class User {
+        +int id
+        +String email
+        +String password_encrypted
+        +String role
+        +String name
+        +String cpf
+        +Date birthday
+        +String phone_number
+        +DateTime created_at
+    }
+
+    class Patient {
+        +int id
+        +int user_id
+        +int insurance
+        +DateTime created_at
+    }
+
+    class Doctor {
+        +int id
+        +int user_id
+        +String crm_uf
+        +String crm_number
+        +String specialty
+        +float appointment_price
+        +boolean remote_appointments
+        +DateTime created_at
+    }
+
+    class MedicalSpecialty {
+        +int id
+        +String medical_specialty
+        +int access_frequency
+    }
+
+    class Insurance {
+        +int id
+        +String name
+        +DateTime created_at
+    }
+
+    class Appointment {
+        +int id
+        +int doctor_id
+        +int patient_id
+        +Date date
+        +Time start_time
+        +Time end_time
+        +int rate
+        +String observation
+    }
+    note for Appointment "Não Implementado"
+
+    class MedicalRecord {
+        +int id
+        +int patient_id
+        +int weight
+        +int height
+        +boolean heart_disease
+        +boolean diabetes
+        +boolean smoker
+    }
+    note for MedicalRecord "Não Implementado"
+
+    class Question {
+        +int id
+        +String question
+        +DateTime created_at
+    }
+
+    class Answer {
+        +int id
+        +int question_id
+        +int doctor_id
+        +String answer
+        +DateTime created_at
+    }
+
+    User "1" -- "0..1" Patient
+    User "1" -- "0..1" Doctor
+    Patient "*" -- "0..1" Insurance
+    Doctor "*" -- "0..1" MedicalSpecialty
+    Doctor "*" -- "*" Insurance
+    Patient "1" -- "*" Appointment
+    Doctor "1" -- "*" Appointment
+    Patient "1" -- "0..1" MedicalRecord
+    Question "1" -- "*" Answer
+    Doctor "1" -- "*" Answer
+```
