@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { createQuestion, loadQuestions } from "./questions.js";
+import { createAnswer, createQuestion, loadQuestions } from "./questions.js";
 
 const question = {
   id: 4,
   question: "Como me preparo para a primeira consulta?",
   createdAt: "2026-09-29T12:00:00.000Z",
+  answers: [],
 };
 
 test("loads the public questions list", async () => {
@@ -53,6 +54,37 @@ test("rejects malformed question list responses", async () => {
   )) as typeof fetch;
   try {
     await assert.rejects(loadQuestions(), /perguntas.*inválida/i);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("submits a doctor answer with the signed bearer token", async () => {
+  const originalFetch = globalThis.fetch;
+  let requestUrl = "";
+  let requestInit: RequestInit | undefined;
+  const answer = {
+    id: 8,
+    questionId: 4,
+    doctorId: 9,
+    answer: "Esta é uma resposta médica informativa.",
+    createdAt: "2026-09-29T13:00:00.000Z",
+  };
+  globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
+    requestUrl = String(input);
+    requestInit = init;
+    return new Response(JSON.stringify(answer), { status: 201 });
+  }) as typeof fetch;
+
+  try {
+    assert.deepEqual(await createAnswer(4, answer.answer, "signed-token"), answer);
+    assert.equal(requestUrl, "/api/questions/4/answers");
+    assert.equal(requestInit?.method, "POST");
+    assert.deepEqual(requestInit?.headers, {
+      "Content-Type": "application/json",
+      Authorization: "Bearer signed-token",
+    });
+    assert.equal(requestInit?.body, JSON.stringify({ answer: answer.answer }));
   } finally {
     globalThis.fetch = originalFetch;
   }
