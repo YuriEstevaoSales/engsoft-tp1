@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'afcee793da03d4441c7cfdd8306315c71f4d81c090f181cbe31b800dfbce950f'>;
+  StorageHashBase<'5b3c06fdc71ea93279e9158402982b3bb5c713b61c1367f60737927bb9edf296'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -343,6 +343,7 @@ export type FieldOutputTypes = {
       readonly passwordEncrypted: CodecTypes['sql/varchar@1']['output'];
       readonly phoneNumber: CodecTypes['sql/varchar@1']['output'];
       readonly photo: CodecTypes['pg/text@1']['output'] | null;
+      readonly role: CodecTypes['pg/text@1']['output'];
       readonly stateAddress: CodecTypes['sql/varchar@1']['output'];
     };
   };
@@ -443,6 +444,7 @@ export type FieldInputTypes = {
       readonly passwordEncrypted: CodecTypes['sql/varchar@1']['input'];
       readonly phoneNumber: CodecTypes['sql/varchar@1']['input'];
       readonly photo: CodecTypes['pg/text@1']['input'] | null;
+      readonly role: CodecTypes['pg/text@1']['input'];
       readonly stateAddress: CodecTypes['sql/varchar@1']['input'];
     };
   };
@@ -543,6 +545,7 @@ export type StorageColumnTypes = {
       readonly password_encrypted: CodecTypes['sql/varchar@1']['output'];
       readonly phone_number: CodecTypes['sql/varchar@1']['output'];
       readonly photo: CodecTypes['pg/text@1']['output'] | null;
+      readonly role: CodecTypes['pg/text@1']['output'];
       readonly state_address: CodecTypes['sql/varchar@1']['output'];
     };
   };
@@ -643,6 +646,7 @@ export type StorageColumnInputTypes = {
       readonly password_encrypted: CodecTypes['sql/varchar@1']['input'];
       readonly phone_number: CodecTypes['sql/varchar@1']['input'];
       readonly photo: CodecTypes['pg/text@1']['input'] | null;
+      readonly role: CodecTypes['pg/text@1']['input'];
       readonly state_address: CodecTypes['sql/varchar@1']['input'];
     };
   };
@@ -768,6 +772,7 @@ export namespace Models {
     passwordEncrypted: CodecTypes['sql/varchar@1']['output'];
     phoneNumber: CodecTypes['sql/varchar@1']['output'];
     photo: CodecTypes['pg/text@1']['output'] | null;
+    role: CodecTypes['pg/text@1']['output'];
     stateAddress: CodecTypes['sql/varchar@1']['output'];
     doctors: public_Doctors[];
     patients: public_Patients | null;
@@ -1503,6 +1508,15 @@ type ContractBase = Omit<
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
+                };
+                readonly role: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'patient'>;
+                  };
                 };
                 readonly state_address: {
                   readonly nativeType: 'character varying';
@@ -2272,6 +2286,10 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly role: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly stateAddress: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'sql/varchar@1' };
@@ -2317,6 +2335,7 @@ type ContractBase = Omit<
                 readonly passwordEncrypted: { readonly column: 'password_encrypted' };
                 readonly phoneNumber: { readonly column: 'phone_number' };
                 readonly photo: { readonly column: 'photo' };
+                readonly role: { readonly column: 'role' };
                 readonly stateAddress: { readonly column: 'state_address' };
               };
             };

@@ -1139,6 +1139,13 @@
                   "kind": "scalar"
                 }
               },
+              "role": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "stateAddress": {
                 "nullable": false,
                 "type": {
@@ -1214,6 +1221,9 @@
                 },
                 "photo": {
                   "column": "photo"
+                },
+                "role": {
+                  "column": "role"
                 },
                 "stateAddress": {
                   "column": "state_address"
@@ -2141,6 +2151,15 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "role": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "patient"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "state_address": {
                   "codecId": "sql/varchar@1",
                   "nativeType": "character varying",
@@ -2182,7 +2201,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "afcee793da03d4441c7cfdd8306315c71f4d81c090f181cbe31b800dfbce950f"
+    "storageHash": "5b3c06fdc71ea93279e9158402982b3bb5c713b61c1367f60737927bb9edf296"
   },
   "capabilities": {
     "postgres": {
