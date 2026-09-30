@@ -8,6 +8,10 @@
       "model": "PrismaMigrations",
       "namespace": "public"
     },
+    "answers": {
+      "model": "Answers",
+      "namespace": "public"
+    },
     "appointments": {
       "model": "Appointments",
       "namespace": "public"
@@ -45,6 +49,100 @@
     "namespaces": {
       "public": {
         "models": {
+          "Answers": {
+            "fields": {
+              "answer": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "doctorId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int2@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "questionId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "doctor": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "doctorId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Doctors",
+                  "namespace": "public"
+                }
+              },
+              "question": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "questionId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Questions",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "answer": {
+                  "column": "answer"
+                },
+                "createdAt": {
+                  "column": "created_at"
+                },
+                "doctorId": {
+                  "column": "doctor_id"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "questionId": {
+                  "column": "question_id"
+                }
+              },
+              "namespaceId": "public",
+              "table": "answers"
+            }
+          },
           "Appointments": {
             "fields": {
               "createdAt": {
@@ -1931,7 +2029,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "20d4ddab7ecd87ff7ed769b0fe85bd5e6c0fa4ec46f36a88eb0fcd3b11cdeb61"
+    "storageHash": "afcee793da03d4441c7cfdd8306315c71f4d81c090f181cbe31b800dfbce950f"
   },
   "capabilities": {
     "postgres": {
