@@ -27,9 +27,23 @@ model Users {
   passwordEncrypted VarChar     @map("password_encrypted")
   doctors           Doctors[]
   patients          Patients?
+  authTokens        AuthTokens[]
 
   @@rls
   @@map("users")
+}
+
+model AuthTokens {
+  id        BigInt    @id(map: "auth_tokens_pkey") @default(autoincrement())
+  createdAt Timestamptz @default(now()) @map("created_at")
+  expiresAt Timestamptz @map("expires_at")
+  tokenHash VarChar    @unique(map: "auth_tokens_token_hash_key") @map("token_hash")
+  userId    SmallInt   @map("user_id")
+  user      Users      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "auth_tokens_user_id_fkey")
+
+  @@index([userId, expiresAt], map: "auth_tokens_user_expiry_idx")
+  @@rls
+  @@map("auth_tokens")
 }
 
 model Doctors {
