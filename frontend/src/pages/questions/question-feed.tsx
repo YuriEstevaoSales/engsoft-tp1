@@ -87,7 +87,7 @@ export function QuestionFeed({ publishedQuestion, refreshVersion, onAnswerCreate
                       {answer.answer}
                     </p>
                     <p className="mb-0 mt-2 text-sm text-[#53625e]">
-                      <strong>{answer.doctor.name}</strong>
+                      <strong>{answer.doctor.user.name}</strong>
                       {answer.doctor.specialty ? ` · ${answer.doctor.specialty}` : " · Médico"}
                     </p>
                     <time className="mt-1 block text-xs text-[#667873]" dateTime={answer.createdAt}>

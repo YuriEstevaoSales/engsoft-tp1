@@ -25,6 +25,40 @@ test("loads the public questions list", async () => {
   }
 });
 
+test("loads answers using the backend doctor.user response shape", async () => {
+  const originalFetch = globalThis.fetch;
+  const questionWithAnswer = {
+    ...question,
+    answers: [{
+      id: 8,
+      answer: "Esta é uma resposta médica informativa.",
+      createdAt: "2026-09-29T13:00:00.000Z",
+      doctor: { specialty: "Cardiologia", user: { name: "Dra. Teste" } },
+    }],
+  };
+  globalThis.fetch = (async () => new Response(
+    JSON.stringify({ count: 1, questions: [questionWithAnswer] }),
+    { status: 200 },
+  )) as typeof fetch;
+
+  try {
+    assert.deepEqual(await loadQuestions(), [questionWithAnswer]);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("normalizes a newly created question without an answers relation", async () => {
+  const originalFetch = globalThis.fetch;
+  const { answers: _answers, ...createdQuestion } = question;
+  globalThis.fetch = (async () => new Response(JSON.stringify(createdQuestion), { status: 201 })) as typeof fetch;
+  try {
+    assert.deepEqual(await createQuestion(question.question), { ...createdQuestion, answers: [] });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("submits an anonymous question without an authorization header", async () => {
   const originalFetch = globalThis.fetch;
   let requestUrl = "";

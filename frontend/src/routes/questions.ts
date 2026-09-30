@@ -6,8 +6,11 @@ export type DoctorAnswer = {
   createdAt: string;
 };
 
-export type PublicAnswer = DoctorAnswer & {
-  doctor: { name: string; specialty: string | null };
+export type PublicAnswer = {
+  id: number;
+  answer: string;
+  createdAt: string;
+  doctor: { specialty: string | null; user: { name: string } };
 };
 
 export type PublicQuestion = {
@@ -29,23 +32,35 @@ function isDoctorAnswer(value: unknown): value is DoctorAnswer {
 }
 
 function isPublicAnswer(value: unknown): value is PublicAnswer {
-  if (!isDoctorAnswer(value)) return false;
-  const doctor = (value as Record<string, unknown>)["doctor"];
+  if (typeof value !== "object" || value === null) return false;
+  const answer = value as Record<string, unknown>;
+  const doctor = answer["doctor"];
   if (typeof doctor !== "object" || doctor === null) return false;
   const profile = doctor as Record<string, unknown>;
-  return typeof profile["name"] === "string"
-    && (typeof profile["specialty"] === "string" || profile["specialty"] === null);
+  const user = profile["user"];
+  return Number.isInteger(answer["id"])
+    && typeof answer["answer"] === "string"
+    && typeof answer["createdAt"] === "string"
+    && !Number.isNaN(Date.parse(answer["createdAt"]))
+    && (typeof profile["specialty"] === "string" || profile["specialty"] === null)
+    && typeof user === "object"
+    && user !== null
+    && typeof (user as Record<string, unknown>)["name"] === "string";
 }
 
-function isPublicQuestion(value: unknown): value is PublicQuestion {
+function isQuestionSummary(value: unknown): value is Omit<PublicQuestion, "answers"> {
   if (typeof value !== "object" || value === null) return false;
   const question = value as Record<string, unknown>;
   return Number.isInteger(question["id"])
     && typeof question["question"] === "string"
     && typeof question["createdAt"] === "string"
-    && !Number.isNaN(Date.parse(question["createdAt"]))
-    && Array.isArray(question["answers"])
-    && question["answers"].every(isPublicAnswer);
+    && !Number.isNaN(Date.parse(question["createdAt"]));
+}
+
+function isPublicQuestion(value: unknown): value is PublicQuestion {
+  if (!isQuestionSummary(value)) return false;
+  const answers = (value as Record<string, unknown>)["answers"];
+  return Array.isArray(answers) && answers.every(isPublicAnswer);
 }
 
 export async function loadQuestions(): Promise<PublicQuestion[]> {
@@ -70,8 +85,13 @@ export async function createQuestion(question: string): Promise<PublicQuestion> 
   });
   if (!response.ok) throw new Error("Não foi possível publicar sua pergunta.");
   const result: unknown = await response.json();
-  if (!isPublicQuestion(result)) throw new Error("A resposta de perguntas é inválida.");
-  return result;
+  if (!isQuestionSummary(result)) throw new Error("A resposta de perguntas é inválida.");
+  const answers = (result as Record<string, unknown>)["answers"];
+  if (answers === undefined) return { ...result, answers: [] };
+  if (!Array.isArray(answers) || !answers.every(isPublicAnswer)) {
+    throw new Error("A resposta de perguntas é inválida.");
+  }
+  return { ...result, answers };
 }
 
 export async function createAnswer(
