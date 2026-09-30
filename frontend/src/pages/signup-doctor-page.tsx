@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { saveSession, type SessionUser } from "../auth/session.js";
+import { PasswordInput } from "../components/password-input.js";
 import { loadMedicalSpecialties } from "../routes/specialties.js";
 import { SIGNUP_DRAFT_KEY } from "../routes/signup-draft.js";
 import {
@@ -50,7 +51,7 @@ export function SignupDoctorPage() {
       });
       const data = (await response.json()) as {
         message?: string;
-        user?: Omit<SessionUser, "accessToken">;
+        user?: SessionUser;
         accessToken?: string;
       };
       if (!response.ok || !data.user || !data.accessToken) {

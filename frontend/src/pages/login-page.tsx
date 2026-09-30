@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { saveSession, type SessionUser } from "../auth/session.js";
+import { PasswordInput } from "../components/password-input.js";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -21,14 +22,23 @@ export function LoginPage() {
       });
       const data = (await response.json()) as {
         message?: string;
-        user?: Omit<SessionUser, "accessToken">;
+        user?: SessionUser;
+        id?: number;
+        name?: string;
+        email?: string;
+        role?: "medico" | "paciente";
         accessToken?: string;
       };
-      if (!response.ok || !data.user || !data.accessToken) {
+      const user = data.user ?? (
+        data.id && data.name && data.email && data.role
+          ? { id: data.id, name: data.name, email: data.email, role: data.role }
+          : null
+      );
+      if (!response.ok || !user || (user.role === "medico" && !data.accessToken)) {
         setError(data.message ?? "Não foi possível entrar.");
         return;
       }
-      saveSession({ ...data.user, accessToken: data.accessToken });
+      saveSession(data.accessToken ? { ...user, accessToken: data.accessToken } : user);
       void navigate("/perfil");
     } catch {
       setError("Falha de conexão com o servidor.");

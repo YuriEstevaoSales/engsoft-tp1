@@ -55,12 +55,12 @@ export function SignupPage() {
             insuranceId: value("insuranceId"), password: value("password"),
           }),
         });
-        const data = (await response.json()) as { message?: string; user?: SessionUser };
+        const data = (await response.json()) as { message?: string; user?: SessionUser; accessToken?: string };
         if (!response.ok || !data.user) {
           setError(data.message ?? "Não foi possível cadastrar.");
           return;
         }
-        saveSession(data.user);
+        saveSession(data.accessToken ? { ...data.user, accessToken: data.accessToken } : data.user);
         void navigate("/perfil");
       } catch {
         setError("Falha de conexão com o servidor.");
