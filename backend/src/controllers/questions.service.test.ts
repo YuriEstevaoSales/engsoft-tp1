@@ -53,7 +53,8 @@ test("lists recent questions with a bounded page size", async () => {
   const all = mock.fn(async () => questions);
   const limit = mock.fn((requestedLimit: number) => ({ all, requestedLimit }));
   const orderBy = mock.fn(() => ({ limit }));
-  mock.method(db.orm.public.Questions, "select", () => ({ orderBy }));
+  const include = mock.fn(() => ({ orderBy }));
+  mock.method(db.orm.public.Questions, "select", () => ({ include }));
 
   try {
     const result = await new QuestionsService().listPublicQuestions();

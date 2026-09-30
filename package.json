@@ -20,7 +20,7 @@
     "dev": "concurrently -k -n api,web \"npm:dev:api\" \"npm:dev:web\"",
     "dev:api": "tsx watch backend/src/main.ts",
     "dev:web": "vite --config frontend/vite.config.ts",
-    "test": "node --import tsx --test backend/src/controllers/*.test.ts frontend/src/routes/*.test.ts frontend/src/pages/*.test.ts",
+    "test": "node --import tsx --test backend/src/auth/*.test.ts backend/src/controllers/*.test.ts frontend/src/routes/*.test.ts frontend/src/pages/*.test.ts",
     "build": "tsc --noEmit && vite build --config frontend/vite.config.ts",
     "postinstall": "prisma skills sync || exit 0"
   },
