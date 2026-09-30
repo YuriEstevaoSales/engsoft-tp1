@@ -25,6 +25,6 @@ creation timestamp are stored; the page warns users not to include personal data
 - **Request:** JSON body `{ "answer": "..." }`. The doctor ID is taken from the verified session, never from the request body.
 - **Validation:** the trimmed answer must contain 10–2000 characters. Invalid input returns `400 Bad Request`; an unknown question returns `404 Not Found`; a second answer by the same doctor returns `409 Conflict`.
 - **Success:** `201 Created` with the saved answer. The public question feed then displays it with the doctor's name and specialty.
-- **Persistence and access:** answers are stored in `public.answers`. Existing databases need `docker/postgres/migrations/005_answers.sql`; it enables RLS and revokes direct `anon`/`authenticated` table grants. Requests go through the Nest API.
+- **Persistence and access:** answers are stored in `public.answers`. Existing databases need `docker/postgres/migrations/005_answers.sql`; apply it through the Supabase SQL Editor for Supabase projects. It enables RLS and revokes direct `anon`/`authenticated` table grants. Requests go through the Nest API using the server-only `DATABASE_URL`.
 
 The content is user-submitted and rendered as text. Questions are not medical advice and do not replace a clinical consultation or emergency care.

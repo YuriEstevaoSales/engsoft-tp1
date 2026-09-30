@@ -79,6 +79,11 @@ Para habilitar respostas médicas em um volume existente, aplique a migração:
 docker compose exec -T db psql -U dochub -d dochub < docker/postgres/migrations/005_answers.sql
 ```
 
+No Supabase, aplique os arquivos `004_questions.sql` e `005_answers.sql` pelo
+SQL Editor, nessa ordem, caso ainda não tenha aplicado a 004. A 005 ativa RLS
+e remove acesso direto das roles `anon` e `authenticated`; o Nest acessa essas
+tabelas pelo `DATABASE_URL` mantido somente no servidor.
+
 A página pública de perguntas fica em `/perguntas-respostas`. Qualquer pessoa
 pode publicar sem conta; as perguntas são exibidas imediatamente e ficam
 anônimas. Médicos entram pela tela de login para responder. A API e as regras de validação estão descritas em
