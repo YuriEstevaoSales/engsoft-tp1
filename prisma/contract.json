@@ -1676,6 +1676,96 @@
                 }
               ]
             },
+            "auth_tokens": {
+              "columns": {
+                "created_at": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "expires_at": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int8@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int8",
+                  "nullable": false
+                },
+                "token_hash": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": false
+                },
+                "user_id": {
+                  "codecId": "pg/int2@1",
+                  "nativeType": "int2",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "name": "auth_tokens_user_id_fkey",
+                  "onDelete": "cascade",
+                  "onUpdate": "cascade",
+                  "source": {
+                    "columns": [
+                      "user_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "auth_tokens"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "users"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "user_id",
+                    "expires_at"
+                  ],
+                  "name": "auth_tokens_user_expiry_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "user_id"
+                  ],
+                  "name": "auth_tokens_user_id_idx_6c952402",
+                  "prefix": "auth_tokens_user_id_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ],
+                "name": "auth_tokens_pkey"
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "token_hash"
+                  ],
+                  "name": "auth_tokens_token_hash_key"
+                }
+              ]
+            },
             "doctors": {
               "columns": {
                 "address_complement": {
