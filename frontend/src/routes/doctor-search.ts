@@ -12,7 +12,9 @@ export {
 export { getVisiblePageNumbers } from "./doctor-search-pagination.js";
 export {
   createMedicalSpecialtySlug,
+  createMedicalSpecialtiesSlug,
   extractMedicalSpecialtySlug,
+  resolveMedicalSpecialtiesSlugs,
   resolveMedicalSpecialtySlug,
 } from "./doctor-search-slugs.js";
 export {

@@ -95,6 +95,21 @@ test("loads doctors for only the selected specialty and validates the response",
       state: "MG",
       city: "Belo Horizonte",
     });
+
+    test("sends multiple specialties in the doctor search request", async () => {
+      const originalFetch = globalThis.fetch;
+      let requestedUrl = "";
+      globalThis.fetch = (async (input: string | URL | Request) => {
+        requestedUrl = String(input);
+        return new Response(JSON.stringify({ count: 0, doctors: [] }), { status: 200 });
+      }) as typeof fetch;
+      try {
+        await loadDoctorsBySpecialty(["Cardiologia", "Dermatologia"]);
+        assert.equal(requestedUrl, "/api/doctors/search?specialty=Cardiologia%2CDermatologia");
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    });
     assert.equal(
       requestedUrl,
       "/api/doctors/search?specialty=Ginecologia&minRating=4&insuranceId=1&state=MG&city=Belo+Horizonte",

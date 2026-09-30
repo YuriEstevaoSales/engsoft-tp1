@@ -2,10 +2,11 @@ import type { InsuranceOption, Municipality, SearchDoctor, SearchFilters } from 
 import { isInsuranceOption, isSearchDoctor } from "./doctor-search-validation.js";
 
 export async function loadDoctorsBySpecialty(
-  specialty: string,
+  specialty: string | readonly string[],
   filters: SearchFilters = {},
 ): Promise<SearchDoctor[]> {
-  const params = new URLSearchParams({ specialty });
+  const specialtyQuery = typeof specialty === "string" ? specialty : specialty.join(",");
+  const params = new URLSearchParams({ specialty: specialtyQuery });
   if (filters.minRating) params.set("minRating", String(filters.minRating));
   if (filters.insuranceId) params.set("insuranceId", String(filters.insuranceId));
   if (filters.state) params.set("state", filters.state);
