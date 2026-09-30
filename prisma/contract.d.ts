@@ -1091,6 +1091,75 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly auth_tokens: {
+              columns: {
+                readonly created_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly expires_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'int8';
+                  readonly codecId: 'pg/int8@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'function';
+                    readonly expression: 'autoincrement()';
+                  };
+                };
+                readonly token_hash: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                };
+                readonly user_id: {
+                  readonly nativeType: 'int2';
+                  readonly codecId: 'pg/int2@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id']; readonly name: 'auth_tokens_pkey' };
+              uniques: readonly [
+                {
+                  readonly columns: readonly ['token_hash'];
+                  readonly name: 'auth_tokens_token_hash_key';
+                },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: 'auth_tokens_user_expiry_idx';
+                  readonly columns: readonly ['user_id', 'expires_at'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'auth_tokens_user_id_idx_6c952402';
+                  readonly prefix: 'auth_tokens_user_id_idx';
+                  readonly columns: readonly ['user_id'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'auth_tokens';
+                    readonly columns: readonly ['user_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'users';
+                    readonly columns: readonly ['id'];
+                  };
+                  readonly name: 'auth_tokens_user_id_fkey';
+                },
+              ];
+            };
             readonly doctors: {
               columns: {
                 readonly address_complement: {
@@ -1593,6 +1662,10 @@ type ContractBase = Omit<
     readonly appointments: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'Appointments';
+    };
+    readonly auth_tokens: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'AuthTokens';
     };
     readonly doctors: { readonly namespace: 'public' & NamespaceId; readonly model: 'Doctors' };
     readonly insurances: {
@@ -2334,6 +2407,17 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
+              readonly authTokens: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'AuthTokens';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['userId'];
+                };
+              };
               readonly doctors: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
