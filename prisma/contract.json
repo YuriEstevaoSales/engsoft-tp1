@@ -1425,6 +1425,46 @@
                   }
                 }
               ],
+              "indexes": [
+                {
+                  "columns": [
+                    "doctor_id"
+                  ],
+                  "name": "answers_doctor_id_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "question_id",
+                    "created_at"
+                  ],
+                  "name": "answers_question_created_at_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "question_id"
+                  ],
+                  "name": "answers_question_id_idx_fcfb223c",
+                  "prefix": "answers_question_id_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ],
+                "name": "answers_pkey"
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "question_id",
+                    "doctor_id"
+                  ],
+                  "name": "answers_question_doctor_key"
+                }
+              ]
             },
             "appointments": {
               "columns": {
