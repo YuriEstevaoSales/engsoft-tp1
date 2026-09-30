@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { saveSession } from "../auth/session.js";
+import { saveSession, SessionUser } from "../auth/session.js";
+import { PasswordInput } from "../components/password-input.js";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -19,12 +20,12 @@ export function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      const data = (await response.json()) as { message?: string; user?: object };
+      const data = (await response.json()) as { message?: string; user?: SessionUser };
       if (!response.ok || !data.user) {
         setError(data.message ?? "Não foi possível entrar.");
         return;
       }
-      saveSession(data.user as never);
+      saveSession(data.user);
       void navigate("/perfil");
     } catch {
       setError("Falha de conexão com o servidor.");
@@ -38,8 +39,8 @@ export function LoginPage() {
       <form className="w-full max-w-[460px] text-center" onSubmit={(event) => void onSubmit(event)}>
         <h1 className="mb-7 text-[clamp(1.6rem,4vw,2.1rem)] font-bold tracking-tight">Faça login para acessar sua conta</h1>
         <div className="mb-6 flex justify-center gap-7">
-          <label className="flex cursor-not-allowed items-center gap-2 text-[#8f9aa3] opacity-45">
-            <input className="accent-[#3dbe73]" type="radio" name="role" disabled />
+          <label className="flex items-center gap-2 text-[#8f9aa3] has-[:checked]:text-[#3dbe73]">
+            <input className="accent-[#3dbe73]" type="radio" name="role" />
             <span>sou paciente</span>
           </label>
           <label className="flex items-center gap-2 text-[#8f9aa3] has-[:checked]:text-[#3dbe73]">
@@ -54,7 +55,7 @@ export function LoginPage() {
         </label>
         <label className="mb-4 block text-left">
           <span className="mb-1.5 ml-2 block text-[0.92rem] text-[#9aa7b0]">senha</span>
-          <input className="w-full rounded-full bg-white px-[18px] py-[13px] text-[#17332d] outline-none focus-visible:ring-2 focus-visible:ring-[#3dbe73]" type="password" required placeholder="insira sua senha" value={password}
+          <PasswordInput className="w-full rounded-full bg-white px-[18px] py-[13px] text-[#17332d] outline-none focus-visible:ring-2 focus-visible:ring-[#3dbe73]" required placeholder="insira sua senha" value={password}
             onChange={(event) => setPassword(event.target.value)} />
         </label>
         {error ? <p className="mb-3 text-[#ffb4ab]" role="alert">{error}</p> : null}
