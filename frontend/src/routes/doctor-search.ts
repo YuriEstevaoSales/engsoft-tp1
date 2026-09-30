@@ -6,6 +6,8 @@ export {
 export {
   loadDoctorsBySpecialty,
   loadInsurances,
+  loadMunicipalities,
+  loadUserLocation,
 } from "./doctor-search-api.js";
 export { getVisiblePageNumbers } from "./doctor-search-pagination.js";
 export {
@@ -16,7 +18,9 @@ export {
 export {
   BRAZILIAN_STATES,
   DOCTOR_SEARCH_ROUTE_PATH,
+  stateAbbreviation,
   type InsuranceOption,
   type SearchDoctor,
   type SearchFilters,
+  type Municipality,
 } from "./doctor-search-types.js";
