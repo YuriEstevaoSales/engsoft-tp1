@@ -8,6 +8,10 @@
       "model": "PrismaMigrations",
       "namespace": "public"
     },
+    "answers": {
+      "model": "Answers",
+      "namespace": "public"
+    },
     "appointments": {
       "model": "Appointments",
       "namespace": "public"
@@ -32,6 +36,10 @@
       "model": "Patients",
       "namespace": "public"
     },
+    "questions": {
+      "model": "Questions",
+      "namespace": "public"
+    },
     "users": {
       "model": "Users",
       "namespace": "public"
@@ -41,6 +49,100 @@
     "namespaces": {
       "public": {
         "models": {
+          "Answers": {
+            "fields": {
+              "answer": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "doctorId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int2@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "questionId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "doctor": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "doctorId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Doctors",
+                  "namespace": "public"
+                }
+              },
+              "question": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "questionId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Questions",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "answer": {
+                  "column": "answer"
+                },
+                "createdAt": {
+                  "column": "created_at"
+                },
+                "doctorId": {
+                  "column": "doctor_id"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "questionId": {
+                  "column": "question_id"
+                }
+              },
+              "namespaceId": "public",
+              "table": "answers"
+            }
+          },
           "Appointments": {
             "fields": {
               "createdAt": {
@@ -278,6 +380,21 @@
               }
             },
             "relations": {
+              "answers": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "doctorId"
+                  ]
+                },
+                "to": {
+                  "model": "Answers",
+                  "namespace": "public"
+                }
+              },
               "appointments": {
                 "cardinality": "1:1",
                 "nullable": true,
@@ -886,6 +1003,63 @@
               "table": "_prisma_migrations"
             }
           },
+          "Questions": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "question": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "answers": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "questionId"
+                  ]
+                },
+                "to": {
+                  "model": "Answers",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "created_at"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "question": {
+                  "column": "question"
+                }
+              },
+              "namespaceId": "public",
+              "table": "questions"
+            }
+          },
           "Users": {
             "fields": {
               "birthday": {
@@ -960,6 +1134,13 @@
               },
               "photo": {
                 "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "role": {
+                "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -1041,6 +1222,9 @@
                 "photo": {
                   "column": "photo"
                 },
+                "role": {
+                  "column": "role"
+                },
                 "stateAddress": {
                   "column": "state_address"
                 }
@@ -1058,6 +1242,11 @@
       "public": {
         "entries": {
           "rls": {
+            "answers": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "answers"
+            },
             "appointments": {
               "kind": "rls",
               "namespaceId": "public",
@@ -1087,6 +1276,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "patients"
+            },
+            "questions": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "questions"
             },
             "users": {
               "kind": "rls",
@@ -1164,6 +1358,123 @@
                 "name": "_prisma_migrations_pkey"
               },
               "uniques": []
+            },
+            "answers": {
+              "columns": {
+                "answer": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "created_at": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "doctor_id": {
+                  "codecId": "pg/int2@1",
+                  "nativeType": "int2",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "question_id": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "name": "answers_question_id_fkey",
+                  "onDelete": "cascade",
+                  "onUpdate": "cascade",
+                  "source": {
+                    "columns": [
+                      "question_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "answers"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "questions"
+                  }
+                },
+                {
+                  "name": "answers_doctor_id_fkey",
+                  "onDelete": "cascade",
+                  "onUpdate": "cascade",
+                  "source": {
+                    "columns": [
+                      "doctor_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "answers"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "doctors"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "doctor_id"
+                  ],
+                  "name": "answers_doctor_id_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "question_id",
+                    "created_at"
+                  ],
+                  "name": "answers_question_created_at_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "question_id"
+                  ],
+                  "name": "answers_question_id_idx_fcfb223c",
+                  "prefix": "answers_question_id_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ],
+                "name": "answers_pkey"
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "question_id",
+                    "doctor_id"
+                  ],
+                  "name": "answers_question_doctor_key"
+                }
+              ]
             },
             "appointments": {
               "columns": {
@@ -1730,6 +2041,51 @@
                 }
               ]
             },
+            "questions": {
+              "columns": {
+                "created_at": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "question": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [
+                {
+                  "columns": [
+                    "created_at",
+                    "id"
+                  ],
+                  "name": "questions_created_at_id_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ],
+                "name": "questions_pkey"
+              },
+              "uniques": []
+            },
             "users": {
               "columns": {
                 "birthday": {
@@ -1795,6 +2151,15 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "role": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "patient"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "state_address": {
                   "codecId": "sql/varchar@1",
                   "nativeType": "character varying",
@@ -1836,7 +2201,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "69af9fc0b4f5da9307c78d71a89ff7d4c8e4e2629ac3066ea8887996bd8041d6"
+    "storageHash": "5b3c06fdc71ea93279e9158402982b3bb5c713b61c1367f60737927bb9edf296"
   },
   "capabilities": {
     "postgres": {

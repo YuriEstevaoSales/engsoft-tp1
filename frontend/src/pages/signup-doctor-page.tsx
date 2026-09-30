@@ -1,7 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { saveSession, SessionUser } from "../auth/session.js";
-import { PasswordInput } from "../components/password-input.js";
+import { saveSession, type SessionUser } from "../auth/session.js";
 import { loadMedicalSpecialties } from "../routes/specialties.js";
 import { SIGNUP_DRAFT_KEY } from "../routes/signup-draft.js";
 import {
@@ -49,13 +48,17 @@ export function SignupDoctorPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...draft, ...Object.fromEntries(form), confirm: undefined }),
       });
-      const data = (await response.json()) as { message?: string; user?: SessionUser };
-      if (!response.ok || !data.user) {
+      const data = (await response.json()) as {
+        message?: string;
+        user?: Omit<SessionUser, "accessToken">;
+        accessToken?: string;
+      };
+      if (!response.ok || !data.user || !data.accessToken) {
         setError(data.message ?? "Não foi possível cadastrar.");
         return;
       }
       sessionStorage.removeItem(SIGNUP_DRAFT_KEY);
-      saveSession(data.user);
+      saveSession({ ...data.user, accessToken: data.accessToken });
       void navigate("/perfil");
     } catch {
       setError("Falha de conexão com o servidor.");

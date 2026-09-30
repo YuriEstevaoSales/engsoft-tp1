@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'69af9fc0b4f5da9307c78d71a89ff7d4c8e4e2629ac3066ea8887996bd8041d6'>;
+  StorageHashBase<'5b3c06fdc71ea93279e9158402982b3bb5c713b61c1367f60737927bb9edf296'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -249,6 +249,13 @@ type DefaultLiteralValue<CodecId extends string, Encoded> = CodecId extends keyo
 
 export type FieldOutputTypes = {
   readonly public: {
+    readonly Answers: {
+      readonly answer: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly doctorId: CodecTypes['pg/int2@1']['output'];
+      readonly id: CodecTypes['pg/int4@1']['output'];
+      readonly questionId: CodecTypes['pg/int4@1']['output'];
+    };
     readonly Appointments: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly date: CodecTypes['pg/date-temporal@1']['output'];
@@ -319,6 +326,11 @@ export type FieldOutputTypes = {
       readonly rolledBackAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly startedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
+    readonly Questions: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/int4@1']['output'];
+      readonly question: CodecTypes['pg/text@1']['output'];
+    };
     readonly Users: {
       readonly birthday: CodecTypes['pg/date-temporal@1']['output'];
       readonly city: CodecTypes['sql/varchar@1']['output'] | null;
@@ -331,12 +343,20 @@ export type FieldOutputTypes = {
       readonly passwordEncrypted: CodecTypes['sql/varchar@1']['output'];
       readonly phoneNumber: CodecTypes['sql/varchar@1']['output'];
       readonly photo: CodecTypes['pg/text@1']['output'] | null;
+      readonly role: CodecTypes['pg/text@1']['output'];
       readonly stateAddress: CodecTypes['sql/varchar@1']['output'];
     };
   };
 };
 export type FieldInputTypes = {
   readonly public: {
+    readonly Answers: {
+      readonly answer: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly doctorId: CodecTypes['pg/int2@1']['input'];
+      readonly id: CodecTypes['pg/int4@1']['input'];
+      readonly questionId: CodecTypes['pg/int4@1']['input'];
+    };
     readonly Appointments: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly date: CodecTypes['pg/date-temporal@1']['input'];
@@ -407,6 +427,11 @@ export type FieldInputTypes = {
       readonly rolledBackAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly startedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
+    readonly Questions: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/int4@1']['input'];
+      readonly question: CodecTypes['pg/text@1']['input'];
+    };
     readonly Users: {
       readonly birthday: CodecTypes['pg/date-temporal@1']['input'];
       readonly city: CodecTypes['sql/varchar@1']['input'] | null;
@@ -419,6 +444,7 @@ export type FieldInputTypes = {
       readonly passwordEncrypted: CodecTypes['sql/varchar@1']['input'];
       readonly phoneNumber: CodecTypes['sql/varchar@1']['input'];
       readonly photo: CodecTypes['pg/text@1']['input'] | null;
+      readonly role: CodecTypes['pg/text@1']['input'];
       readonly stateAddress: CodecTypes['sql/varchar@1']['input'];
     };
   };
@@ -434,6 +460,13 @@ export type StorageColumnTypes = {
       readonly migration_name: Varchar<255>;
       readonly rolled_back_at: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly started_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly answers: {
+      readonly answer: CodecTypes['pg/text@1']['output'];
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly doctor_id: CodecTypes['pg/int2@1']['output'];
+      readonly id: CodecTypes['pg/int4@1']['output'];
+      readonly question_id: CodecTypes['pg/int4@1']['output'];
     };
     readonly appointments: {
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -495,6 +528,11 @@ export type StorageColumnTypes = {
       readonly insurance: CodecTypes['pg/int2@1']['output'] | null;
       readonly user_id: CodecTypes['pg/int2@1']['output'];
     };
+    readonly questions: {
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/int4@1']['output'];
+      readonly question: CodecTypes['pg/text@1']['output'];
+    };
     readonly users: {
       readonly birthday: CodecTypes['pg/date-temporal@1']['output'];
       readonly city: CodecTypes['sql/varchar@1']['output'] | null;
@@ -507,6 +545,7 @@ export type StorageColumnTypes = {
       readonly password_encrypted: CodecTypes['sql/varchar@1']['output'];
       readonly phone_number: CodecTypes['sql/varchar@1']['output'];
       readonly photo: CodecTypes['pg/text@1']['output'] | null;
+      readonly role: CodecTypes['pg/text@1']['output'];
       readonly state_address: CodecTypes['sql/varchar@1']['output'];
     };
   };
@@ -522,6 +561,13 @@ export type StorageColumnInputTypes = {
       readonly migration_name: CodecTypes['sql/varchar@1']['input'];
       readonly rolled_back_at: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly started_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly answers: {
+      readonly answer: CodecTypes['pg/text@1']['input'];
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly doctor_id: CodecTypes['pg/int2@1']['input'];
+      readonly id: CodecTypes['pg/int4@1']['input'];
+      readonly question_id: CodecTypes['pg/int4@1']['input'];
     };
     readonly appointments: {
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -583,6 +629,11 @@ export type StorageColumnInputTypes = {
       readonly insurance: CodecTypes['pg/int2@1']['input'] | null;
       readonly user_id: CodecTypes['pg/int2@1']['input'];
     };
+    readonly questions: {
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/int4@1']['input'];
+      readonly question: CodecTypes['pg/text@1']['input'];
+    };
     readonly users: {
       readonly birthday: CodecTypes['pg/date-temporal@1']['input'];
       readonly city: CodecTypes['sql/varchar@1']['input'] | null;
@@ -595,12 +646,23 @@ export type StorageColumnInputTypes = {
       readonly password_encrypted: CodecTypes['sql/varchar@1']['input'];
       readonly phone_number: CodecTypes['sql/varchar@1']['input'];
       readonly photo: CodecTypes['pg/text@1']['input'] | null;
+      readonly role: CodecTypes['pg/text@1']['input'];
       readonly state_address: CodecTypes['sql/varchar@1']['input'];
     };
   };
 };
 
 export namespace Models {
+  export type public_Answers = {
+    answer: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    doctorId: CodecTypes['pg/int2@1']['output'];
+    id: CodecTypes['pg/int4@1']['output'];
+    questionId: CodecTypes['pg/int4@1']['output'];
+    doctor: public_Doctors;
+    question: public_Questions;
+    readonly [RelationKeys]?: 'doctor' | 'question';
+  };
   export type public_Appointments = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     date: CodecTypes['pg/date-temporal@1']['output'];
@@ -630,10 +692,11 @@ export namespace Models {
     specialty: CodecTypes['pg/text@1']['output'] | null;
     street: CodecTypes['sql/varchar@1']['output'];
     userId: CodecTypes['pg/int2@1']['output'];
+    answers: public_Answers[];
     appointments: public_Appointments | null;
     medicalSpecialties: public_MedicalSpecialties | null;
     user: public_Users;
-    readonly [RelationKeys]?: 'appointments' | 'medicalSpecialties' | 'user';
+    readonly [RelationKeys]?: 'answers' | 'appointments' | 'medicalSpecialties' | 'user';
   };
   export type public_Insurances = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -690,6 +753,13 @@ export namespace Models {
     startedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     readonly [RelationKeys]?: never;
   };
+  export type public_Questions = {
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/int4@1']['output'];
+    question: CodecTypes['pg/text@1']['output'];
+    answers: public_Answers[];
+    readonly [RelationKeys]?: 'answers';
+  };
   export type public_Users = {
     birthday: CodecTypes['pg/date-temporal@1']['output'];
     city: CodecTypes['sql/varchar@1']['output'] | null;
@@ -702,6 +772,7 @@ export namespace Models {
     passwordEncrypted: CodecTypes['sql/varchar@1']['output'];
     phoneNumber: CodecTypes['sql/varchar@1']['output'];
     photo: CodecTypes['pg/text@1']['output'] | null;
+    role: CodecTypes['pg/text@1']['output'];
     stateAddress: CodecTypes['sql/varchar@1']['output'];
     doctors: public_Doctors[];
     patients: public_Patients | null;
@@ -711,6 +782,7 @@ export namespace Models {
 
 export declare const models: {
   public: {
+    Answers: Models.public_Answers;
     Appointments: Models.public_Appointments;
     Doctors: Models.public_Doctors;
     Insurances: Models.public_Insurances;
@@ -718,6 +790,7 @@ export declare const models: {
     MedicalSpecialties: Models.public_MedicalSpecialties;
     Patients: Models.public_Patients;
     PrismaMigrations: Models.public_PrismaMigrations;
+    Questions: Models.public_Questions;
     Users: Models.public_Users;
   };
 };
@@ -798,6 +871,93 @@ type ContractBase = Omit<
               uniques: readonly [];
               indexes: readonly [];
               foreignKeys: readonly [];
+            };
+            readonly answers: {
+              columns: {
+                readonly answer: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly created_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly doctor_id: {
+                  readonly nativeType: 'int2';
+                  readonly codecId: 'pg/int2@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'function';
+                    readonly expression: 'autoincrement()';
+                  };
+                };
+                readonly question_id: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id']; readonly name: 'answers_pkey' };
+              uniques: readonly [
+                {
+                  readonly columns: readonly ['question_id', 'doctor_id'];
+                  readonly name: 'answers_question_doctor_key';
+                },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: 'answers_doctor_id_idx';
+                  readonly columns: readonly ['doctor_id'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'answers_question_created_at_idx';
+                  readonly columns: readonly ['question_id', 'created_at'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'answers_question_id_idx_fcfb223c';
+                  readonly prefix: 'answers_question_id_idx';
+                  readonly columns: readonly ['question_id'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'answers';
+                    readonly columns: readonly ['question_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'questions';
+                    readonly columns: readonly ['id'];
+                  };
+                  readonly name: 'answers_question_id_fkey';
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'answers';
+                    readonly columns: readonly ['doctor_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'doctors';
+                    readonly columns: readonly ['id'];
+                  };
+                  readonly name: 'answers_doctor_id_fkey';
+                },
+              ];
             };
             readonly appointments: {
               columns: {
@@ -1253,6 +1413,40 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly questions: {
+              columns: {
+                readonly created_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly id: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'function';
+                    readonly expression: 'autoincrement()';
+                  };
+                };
+                readonly question: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id']; readonly name: 'questions_pkey' };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'questions_created_at_id_idx';
+                  readonly columns: readonly ['created_at', 'id'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [];
+            };
             readonly users: {
               columns: {
                 readonly birthday: {
@@ -1315,6 +1509,15 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly role: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'patient'>;
+                  };
+                };
                 readonly state_address: {
                   readonly nativeType: 'character varying';
                   readonly codecId: 'sql/varchar@1';
@@ -1348,6 +1551,7 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'PrismaMigrations';
     };
+    readonly answers: { readonly namespace: 'public' & NamespaceId; readonly model: 'Answers' };
     readonly appointments: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'Appointments';
@@ -1366,12 +1570,77 @@ type ContractBase = Omit<
       readonly model: 'MedicalSpecialties';
     };
     readonly patients: { readonly namespace: 'public' & NamespaceId; readonly model: 'Patients' };
+    readonly questions: { readonly namespace: 'public' & NamespaceId; readonly model: 'Questions' };
     readonly users: { readonly namespace: 'public' & NamespaceId; readonly model: 'Users' };
   };
   readonly domain: {
     readonly namespaces: {
       readonly public: {
         readonly models: {
+          readonly Answers: {
+            readonly fields: {
+              readonly answer: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly doctorId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int2@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly questionId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+            };
+            readonly relations: {
+              readonly doctor: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Doctors';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['doctorId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly question: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Questions';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['questionId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'answers';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly answer: { readonly column: 'answer' };
+                readonly createdAt: { readonly column: 'created_at' };
+                readonly doctorId: { readonly column: 'doctor_id' };
+                readonly id: { readonly column: 'id' };
+                readonly questionId: { readonly column: 'question_id' };
+              };
+            };
+          };
           readonly Appointments: {
             readonly fields: {
               readonly createdAt: {
@@ -1520,6 +1789,17 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
+              readonly answers: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Answers';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['doctorId'];
+                };
+              };
               readonly appointments: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -1916,6 +2196,47 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly Questions: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly question: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly answers: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Answers';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['questionId'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'questions';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'created_at' };
+                readonly id: { readonly column: 'id' };
+                readonly question: { readonly column: 'question' };
+              };
+            };
+          };
           readonly Users: {
             readonly fields: {
               readonly birthday: {
@@ -1965,6 +2286,10 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly role: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly stateAddress: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'sql/varchar@1' };
@@ -2010,6 +2335,7 @@ type ContractBase = Omit<
                 readonly passwordEncrypted: { readonly column: 'password_encrypted' };
                 readonly phoneNumber: { readonly column: 'phone_number' };
                 readonly photo: { readonly column: 'photo' };
+                readonly role: { readonly column: 'role' };
                 readonly stateAddress: { readonly column: 'state_address' };
               };
             };

@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { db } from "../prisma/db.js";
+import { assertDoctorTokenConfiguration, createDoctorToken } from "./doctor-token.js";
 import { encryptPassword, passwordMatches } from "./password.js";
 
 export type RegisterDoctorInput = {
@@ -48,12 +49,14 @@ export class AuthService {
     if (!input.crm || !input.street || !input.addressNumber) {
       throw new BadRequestException("Preencha todos os campos obrigatórios.");
     }
+    assertDoctorTokenConfiguration();
     const { uf, number } = this.parseCrm(input.crm, input.clinicState ?? input.stateAddress);
     const insurance = input.insuranceId ? Number(input.insuranceId) : null;
     try {
       const user = await db.transaction(async (tx) => {
         const created = await tx.orm.public.Users.select("id", "name", "email").create({
           email: input.email.trim().toLowerCase(), name: input.name.trim(),
+          role: "doctor",
           cpf: input.cpf.trim(), birthday: Temporal.PlainDate.from(input.birthday),
           phoneNumber: input.phoneNumber.trim(),
           stateAddress: (input.clinicState ?? input.stateAddress).trim(),
@@ -72,42 +75,32 @@ export class AuthService {
         });
         return created;
       });
-      return { id: user.id, name: user.name, email: user.email, role: "medico" as const };
+      return this.createDoctorSession(user);
     } catch (error) {
       throw this.mapWriteError(error);
     }
   }
 
   async login(email: string, password: string) {
+    assertDoctorTokenConfiguration();
     const user = await db.orm.public.Users
-      .select("id", "name", "email", "passwordEncrypted")
+      .select("id", "name", "email", "passwordEncrypted", "role")
       .where({ email: email.trim().toLowerCase() }).first();
+    if (!user || user.role !== "doctor") throw new UnauthorizedException("Email ou senha inválidos.");
     const doctor = user
       ? await db.orm.public.Doctors.select("id").where({ userId: user.id }).first() : null;
-    const patient = user
-      ? await db.orm.public.Patients.select("id").where({ userId: user.id }).first() : null;
-    if (!user || (!doctor && !patient)) throw new UnauthorizedException("Email ou senha inválidos.");
+    if (!doctor) throw new UnauthorizedException("Email ou senha inválidos.");
     if (!(await passwordMatches(password, user.passwordEncrypted))) {
       throw new UnauthorizedException("Email ou senha inválidos.");
     }
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: doctor ? "medico" as const : "paciente" as const,
-    };
+    return this.createDoctorSession(user);
   }
 
-  private validateCommonRegistration(input: {
-    email: string; password: string; name: string; cpf: string;
-    birthday: string; phoneNumber: string; stateAddress: string;
-  }) {
-    if (!input.email || !input.password || input.password.length < 6) {
-      throw new BadRequestException("Informe email e senha com pelo menos 6 caracteres.");
-    }
-    if (!input.name || !input.cpf || !input.birthday || !input.phoneNumber || !input.stateAddress) {
-      throw new BadRequestException("Preencha todos os campos obrigatórios.");
-    }
+  private async createDoctorSession(user: { id: number; name: string; email: string }) {
+    return {
+      user: { id: user.id, name: user.name, email: user.email, role: "medico" as const },
+      accessToken: await createDoctorToken(user.id),
+    };
   }
 
   private parseCrm(crm: string, fallbackUf: string) {

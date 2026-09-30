@@ -1,45 +1,5 @@
-# Authentication
+# Doctor authentication
 
-## `POST /api/auth/register-patient`
+`POST /api/auth/login` and `POST /api/auth/register-doctor` return `{ "user": { "id": 1, "name": "...", "email": "...", "role": "medico" }, "accessToken": "..." }` on success. The access token is signed with HS256, expires after eight hours, and is used as `Authorization: Bearer <accessToken>` when submitting a doctor answer.
 
-Creates a patient account in a transaction: one row is created in `users` and
-one related row in `patients`. Passwords are stored encrypted, and email, CPF,
-and phone number keep the database uniqueness rules.
-
-- **Authentication:** public.
-- **Request:** `{ email, name, cpf, birthday, phoneNumber, stateAddress,
-  city?, insuranceId?, password }`.
-- **Success:** `200 OK` with `{ user: { id, name, email, role: "paciente" } }`.
-- **Errors:** `400` for missing data or passwords shorter than six characters;
-  `409` when a unique user field is already registered.
-
-## `POST /api/auth/register-doctor`
-
-Creates a doctor account in the same transaction pattern and requires the
-doctor-specific fields already used by the second registration page (`crm`,
-`specialty`, `street`, and `addressNumber`, in addition to the common fields).
-
-- **Authentication:** public.
-- **Success:** `200 OK` with `{ user: { id, name, email, role: "medico" } }`.
-- **Errors:** `400` for invalid or incomplete data; `409` for duplicate email,
-  CPF, phone number, or CRM.
-
-## `POST /api/auth/login`
-
-Authenticates either a doctor or a patient using the same email and password
-form. The role is resolved from the related `doctors` or `patients` row.
-
-- **Authentication:** public.
-- **Request:** `{ email, password }`.
-- **Success:** `200 OK` with `{ user: { id, name, email, role:
-  "medico" | "paciente" } }`.
-- **Errors:** `401` for an unknown account, an account without a supported
-  profile, or an invalid password.
-
-The frontend stores the returned user session locally and opens `/perfil` for
-both roles. When a session exists, the home-page navbar replaces the `Entrar`
-button with the user's name and initial avatar. Clicking it opens the account
-menu with links to the profile and a `Deslogar` action that clears the local
-session and returns to `/`. Doctor and patient profile responses are served by the existing
-`GET /api/doctors/me?userId=<id>` endpoint; the endpoint returns the patient
-identity and insurance reference when the account is a patient.
+The API requires `AUTH_TOKEN_SECRET` with at least 32 bytes. Keep it in the ignored local `.env` and in the deployment's secret store; never expose it to frontend variables. The database stores roles as `doctor`, `patient`, or `admin`; the public API maps the doctor role to `medico`. Existing databases should apply `docker/postgres/migrations/006_user_role.sql` to backfill doctors by their doctor record and set the `patient` default. Answer authorization verifies the signature and then confirms the token subject still belongs to a doctor record. A role value kept in browser storage is not trusted by the API.

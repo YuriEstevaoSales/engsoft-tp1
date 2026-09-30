@@ -38,6 +38,14 @@ para teste; a rota de prontuários não retorna dados clínicos.
 
 Com Docker e o plugin Docker Compose instalados, na raiz do projeto execute:
 
+O login médico requer `AUTH_TOKEN_SECRET` no `.env`. Gere um segredo local com:
+
+```bash
+printf '\nAUTH_TOKEN_SECRET=%s\n' "$(openssl rand -hex 32)" >> .env
+```
+
+Não compartilhe esse valor nem o inclua no Git.
+
 ```bash
 docker compose up --build
 ```
@@ -59,6 +67,30 @@ especialidades, aplique a migração aditiva uma vez:
 docker compose exec -T db psql -U dochub -d dochub < docker/postgres/migrations/002_medical_specialties.sql
 ```
 
+Para incluir a tabela de perguntas em um volume existente, aplique também:
+
+```bash
+docker compose exec -T db psql -U dochub -d dochub < docker/postgres/migrations/004_questions.sql
+```
+
+Para habilitar respostas médicas em um volume existente, aplique a migração:
+
+```bash
+docker compose exec -T db psql -U dochub -d dochub < docker/postgres/migrations/005_answers.sql
+```
+
+No Supabase, aplique os arquivos `004_questions.sql` e `005_answers.sql` pelo
+SQL Editor, nessa ordem, caso ainda não tenha aplicado a 004. A 005 ativa RLS
+e remove acesso direto das roles `anon` e `authenticated`; o Nest acessa essas
+tabelas pelo `DATABASE_URL` mantido somente no servidor. Aplique também
+`006_user_role.sql` para instalar o default `patient` e classificar contas antigas
+vinculadas a médicos como `doctor`.
+
+A página pública de perguntas fica em `/perguntas-respostas`. Qualquer pessoa
+pode publicar sem conta; as perguntas são exibidas imediatamente e ficam
+anônimas. Médicos entram pela tela de login para responder. A API e as regras de validação estão descritas em
+[`docs/api/questions.md`](docs/api/questions.md).
+
 ## Histórias de usuário
 
 Como paciente, eu gostaria de achar médicos próximos de mim.
@@ -78,3 +110,151 @@ Como médico, eu gostaria de me cadastrar na plataforma.
 Como médico, eu gostaria de visualizar as datas das minhas consultas agendadas.
 
 Como médico, eu gostaria de poder responder dúvidas de outros pacientes.
+
+## Documentação Preliminar (UML)
+
+### 1. Diagrama de Casos de Uso
+*Visão geral das interações entre os diferentes tipos de usuários (Visitantes Anônimos, Pacientes e Médicos) e as funcionalidades da plataforma.*
+
+```mermaid
+flowchart LR
+classDef wip fill:#f3f4f6,stroke:#9ca3af,stroke-width:2px,stroke-dasharray: 5 5,color:#6b7280;
+
+    %% Atores
+    Visitante([Visitante / Anônimo])
+    Paciente([Paciente])
+    Medico([Médico])
+
+    %% Sistema
+    subgraph DocHub [Plataforma DocHub]
+        %% Casos de Uso - Públicos
+        UC1(Buscar médicos por especialidade/local)
+        UC2(Visualizar avaliações)
+        UC3(Visualizar perguntas e respostas)
+        UC4(Enviar pergunta anônima)
+        
+        %% Casos de Uso - Paciente
+        UC5(Marcar consulta):::wip
+        UC6(Receber lembretes):::wip
+        UC7(Avaliar atendimento):::wip
+        
+        %% Casos de Uso - Médico
+        UC8(Fazer login / Cadastrar-se)
+        UC9(Gerenciar agenda):::wip
+        UC10(Responder perguntas no fórum)
+        UC11(Gerenciar prontuários):::wip
+    end
+
+    %% Relacionamentos Visitante
+    Visitante --> UC1
+    Visitante --> UC2
+    Visitante --> UC3
+    Visitante --> UC4
+
+    %% Relacionamentos Paciente (herda ações do visitante, mas focamos nas exclusivas)
+    Paciente --> UC5
+    Paciente --> UC6
+    Paciente --> UC7
+    Paciente -. "Também pode" .-> UC1
+    Paciente -. "Também pode" .-> UC4
+
+    %% Relacionamentos Médico
+    Medico --> UC8
+    Medico --> UC9
+    Medico --> UC10
+    Medico --> UC11
+```
+### 2. Diagrama de Classes
+*Estrutura das entidades do banco de dados e suas relações.*
+```mermaid
+classDiagram
+    class User {
+        +int id
+        +String email
+        +String password_encrypted
+        +String role
+        +String name
+        +String cpf
+        +Date birthday
+        +String phone_number
+        +DateTime created_at
+    }
+
+    class Patient {
+        +int id
+        +int user_id
+        +int insurance
+        +DateTime created_at
+    }
+
+    class Doctor {
+        +int id
+        +int user_id
+        +String crm_uf
+        +String crm_number
+        +String specialty
+        +float appointment_price
+        +boolean remote_appointments
+        +DateTime created_at
+    }
+
+    class MedicalSpecialty {
+        +int id
+        +String medical_specialty
+        +int access_frequency
+    }
+
+    class Insurance {
+        +int id
+        +String name
+        +DateTime created_at
+    }
+
+    class Appointment {
+        +int id
+        +int doctor_id
+        +int patient_id
+        +Date date
+        +Time start_time
+        +Time end_time
+        +int rate
+        +String observation
+    }
+    note for Appointment "Não Implementado"
+
+    class MedicalRecord {
+        +int id
+        +int patient_id
+        +int weight
+        +int height
+        +boolean heart_disease
+        +boolean diabetes
+        +boolean smoker
+    }
+    note for MedicalRecord "Não Implementado"
+
+    class Question {
+        +int id
+        +String question
+        +DateTime created_at
+    }
+
+    class Answer {
+        +int id
+        +int question_id
+        +int doctor_id
+        +String answer
+        +DateTime created_at
+    }
+
+    User "1" -- "0..1" Patient
+    User "1" -- "0..1" Doctor
+    Patient "*" -- "0..1" Insurance
+    Doctor "*" -- "0..1" MedicalSpecialty
+    Doctor "*" -- "*" Insurance
+    Patient "1" -- "*" Appointment
+    Doctor "1" -- "*" Appointment
+    Patient "1" -- "0..1" MedicalRecord
+    Question "1" -- "*" Answer
+    Doctor "1" -- "*" Answer
+```
