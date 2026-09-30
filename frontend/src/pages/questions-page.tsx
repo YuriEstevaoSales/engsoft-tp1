@@ -5,6 +5,7 @@ import { QuestionForm } from "./questions/question-form.js";
 
 export function QuestionsPage() {
   const [publishedQuestion, setPublishedQuestion] = useState<PublicQuestion>();
+  const [refreshVersion, setRefreshVersion] = useState(0);
 
   return (
     <main className="mx-auto w-[min(1080px,calc(100%-40px))] flex-1 py-10 text-dochub-ink">
@@ -20,7 +21,11 @@ export function QuestionsPage() {
 
       <section className="grid gap-10 py-8 md:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]">
         <QuestionForm onPublished={setPublishedQuestion} />
-        <QuestionFeed publishedQuestion={publishedQuestion} />
+        <QuestionFeed
+          publishedQuestion={publishedQuestion}
+          refreshVersion={refreshVersion}
+          onAnswerCreated={() => setRefreshVersion((version) => version + 1)}
+        />
       </section>
     </main>
   );

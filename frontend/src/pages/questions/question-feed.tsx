@@ -1,15 +1,22 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
+import { readSession } from "../../auth/session.js";
 import { loadQuestions, type PublicQuestion } from "../../routes/questions.js";
+import { QuestionAnswerForm } from "./question-answer-form.js";
 
 type QuestionFeedProps = {
   publishedQuestion?: PublicQuestion;
+  refreshVersion: number;
+  onAnswerCreated: () => void;
 };
 
-export function QuestionFeed({ publishedQuestion }: QuestionFeedProps) {
+export function QuestionFeed({ publishedQuestion, refreshVersion, onAnswerCreated }: QuestionFeedProps) {
   const [questions, setQuestions] = useState<PublicQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
+  const session = readSession();
+  const accessToken = session?.role === "medico" ? session.accessToken : "";
 
   useEffect(() => {
     let active = true;
@@ -21,7 +28,7 @@ export function QuestionFeed({ publishedQuestion }: QuestionFeedProps) {
       })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [retry]);
+  }, [retry, refreshVersion]);
 
   useEffect(() => {
     if (!publishedQuestion) return;
@@ -70,6 +77,39 @@ export function QuestionFeed({ publishedQuestion }: QuestionFeedProps) {
                 day: "numeric", month: "long", year: "numeric",
               })}
             </time>
+            {item.answers.length === 0 ? (
+              <p className="mb-0 mt-4 text-sm text-[#667873]">Ainda sem respostas de médicos.</p>
+            ) : (
+              <div className="mt-4 grid gap-3 border-l-2 border-[#98c3b6] pl-4">
+                {item.answers.map((answer) => (
+                  <div key={answer.id}>
+                    <p className="my-0 whitespace-pre-wrap break-words leading-relaxed text-[#244542]">
+                      {answer.answer}
+                    </p>
+                    <p className="mb-0 mt-2 text-sm text-[#53625e]">
+                      <strong>{answer.doctor.name}</strong>
+                      {answer.doctor.specialty ? ` · ${answer.doctor.specialty}` : " · Médico"}
+                    </p>
+                    <time className="mt-1 block text-xs text-[#667873]" dateTime={answer.createdAt}>
+                      {new Date(answer.createdAt).toLocaleDateString("pt-BR", {
+                        day: "numeric", month: "long", year: "numeric",
+                      })}
+                    </time>
+                  </div>
+                ))}
+              </div>
+            )}
+            {accessToken ? (
+              <QuestionAnswerForm
+                questionId={item.id}
+                accessToken={accessToken}
+                onAnswered={onAnswerCreated}
+              />
+            ) : (
+              <p className="mb-0 mt-4 text-sm text-[#53625e]">
+                É médico? <Link className="font-semibold text-dochub-teal underline" to="/entrar">Entre para responder</Link>.
+              </p>
+            )}
           </article>
         ))}
       </div>
