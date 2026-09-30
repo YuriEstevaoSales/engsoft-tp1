@@ -82,7 +82,9 @@ docker compose exec -T db psql -U dochub -d dochub < docker/postgres/migrations/
 No Supabase, aplique os arquivos `004_questions.sql` e `005_answers.sql` pelo
 SQL Editor, nessa ordem, caso ainda não tenha aplicado a 004. A 005 ativa RLS
 e remove acesso direto das roles `anon` e `authenticated`; o Nest acessa essas
-tabelas pelo `DATABASE_URL` mantido somente no servidor.
+tabelas pelo `DATABASE_URL` mantido somente no servidor. Aplique também
+`006_user_role.sql` para instalar o default `patient` e classificar contas antigas
+vinculadas a médicos como `doctor`.
 
 A página pública de perguntas fica em `/perguntas-respostas`. Qualquer pessoa
 pode publicar sem conta; as perguntas são exibidas imediatamente e ficam

@@ -27,6 +27,7 @@ export class AuthService {
       const user = await db.transaction(async (tx) => {
         const created = await tx.orm.public.Users.select("id", "name", "email").create({
           email: input.email.trim().toLowerCase(), name: input.name.trim(),
+          role: "doctor",
           cpf: input.cpf.trim(), birthday: Temporal.PlainDate.from(input.birthday),
           phoneNumber: input.phoneNumber.trim(),
           stateAddress: (input.clinicState ?? input.stateAddress).trim(),
@@ -54,11 +55,12 @@ export class AuthService {
   async login(email: string, password: string) {
     assertDoctorTokenConfiguration();
     const user = await db.orm.public.Users
-      .select("id", "name", "email", "passwordEncrypted")
+      .select("id", "name", "email", "passwordEncrypted", "role")
       .where({ email: email.trim().toLowerCase() }).first();
+    if (!user || user.role !== "doctor") throw new UnauthorizedException("Email ou senha inválidos.");
     const doctor = user
       ? await db.orm.public.Doctors.select("id").where({ userId: user.id }).first() : null;
-    if (!user || !doctor) throw new UnauthorizedException("Email ou senha inválidos.");
+    if (!doctor) throw new UnauthorizedException("Email ou senha inválidos.");
     if (!(await passwordMatches(password, user.passwordEncrypted))) {
       throw new UnauthorizedException("Email ou senha inválidos.");
     }
