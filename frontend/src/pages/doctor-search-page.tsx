@@ -3,11 +3,12 @@ import { useNavigate, useParams } from "react-router";
 import { readSession } from "../auth/session.js";
 import { findMedicalSpecialty, filterMedicalSpecialties } from "../routes/specialties.js";
 import {
-  createMedicalSpecialtySlug,
+  createMedicalSpecialtiesSlug,
   getVisiblePageNumbers,
   loadMunicipalities,
   loadUserLocation,
   stateAbbreviation,
+  resolveMedicalSpecialtiesSlugs,
   type SearchDoctor,
 } from "../routes/doctor-search.js";
 import { DoctorCard } from "./doctor-search/doctor-card.js";
@@ -42,7 +43,7 @@ export function DoctorSearchPage() {
     specialtyCatalogRef,
   });
   useEffect(() => {
-    if (specialty) setSpecialtyQuery(specialty);
+    if (specialty) setSpecialtyQuery("");
   }, [specialty]);
 
   useEffect(() => {
@@ -93,7 +94,9 @@ export function DoctorSearchPage() {
     const selected = exact ?? first;
     if (selected) {
       setSpecialtySearchOpen(false);
-      void navigate(`/encontrar-medico/${createMedicalSpecialtySlug(selected)}`);
+      const current = resolveMedicalSpecialtiesSlugs(specialtyCatalog, specialtySlug);
+      const next = current.includes(selected) ? current : [...current, selected];
+      void navigate(`/encontrar-medico/${createMedicalSpecialtiesSlug(next)}`);
     }
   }
 
@@ -111,7 +114,9 @@ export function DoctorSearchPage() {
         onSubmit={handleSearchSubmit}
         onSelectSpecialty={(item) => {
           setSpecialtySearchOpen(false);
-          void navigate(`/encontrar-medico/${createMedicalSpecialtySlug(item)}`);
+          const current = resolveMedicalSpecialtiesSlugs(specialtyCatalog, specialtySlug);
+          const next = current.includes(item) ? current : [...current, item];
+          void navigate(`/encontrar-medico/${createMedicalSpecialtiesSlug(next)}`);
         }}
       />
       <SearchHeader specialty={specialty} doctorCount={doctors.length} loading={loading} error={error} />
