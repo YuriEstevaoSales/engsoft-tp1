@@ -38,6 +38,14 @@ para teste; a rota de prontuários não retorna dados clínicos.
 
 Com Docker e o plugin Docker Compose instalados, na raiz do projeto execute:
 
+O login médico requer `AUTH_TOKEN_SECRET` no `.env`. Gere um segredo local com:
+
+```bash
+printf '\nAUTH_TOKEN_SECRET=%s\n' "$(openssl rand -hex 32)" >> .env
+```
+
+Não compartilhe esse valor nem o inclua no Git.
+
 ```bash
 docker compose up --build
 ```
@@ -65,9 +73,15 @@ Para incluir a tabela de perguntas em um volume existente, aplique também:
 docker compose exec -T db psql -U dochub -d dochub < docker/postgres/migrations/004_questions.sql
 ```
 
+Para habilitar respostas médicas em um volume existente, aplique a migração:
+
+```bash
+docker compose exec -T db psql -U dochub -d dochub < docker/postgres/migrations/005_answers.sql
+```
+
 A página pública de perguntas fica em `/perguntas-respostas`. Qualquer pessoa
 pode publicar sem conta; as perguntas são exibidas imediatamente e ficam
-anônimas. A API e as regras de validação estão descritas em
+anônimas. Médicos entram pela tela de login para responder. A API e as regras de validação estão descritas em
 [`docs/api/questions.md`](docs/api/questions.md).
 
 ## Histórias de usuário
