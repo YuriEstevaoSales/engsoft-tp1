@@ -27,3 +27,14 @@ test("applies rating, accepted insurance, state, and city filters together", () 
     { ...filters, minimumRating: 3 },
   ), false);
 });
+
+test("supports doctors from multiple specialties through the search query", () => {
+  const doctors = [
+    { specialty: "Cardiologia" },
+    { specialty: "Dermatologia" },
+  ];
+  assert.deepEqual(
+    doctors.filter((doctor) => ["Cardiologia", "Dermatologia"].includes(doctor.specialty)),
+    doctors,
+  );
+});

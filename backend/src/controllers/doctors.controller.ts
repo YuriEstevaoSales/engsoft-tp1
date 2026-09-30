@@ -27,13 +27,15 @@ export class DoctorsController {
     if (typeof specialty !== "string" || !specialty.trim()) {
       return { count: 0, doctors: [] };
     }
-    const selectedSpecialty = specialty.trim();
-    const incrementFrequency = db.raw.sql`
-      UPDATE public.medical_specialties
-      SET access_frequency = access_frequency + 1
-      WHERE medical_specialty = ${selectedSpecialty}
-    `.affectedCount().build();
-    await db.runtime().execute(incrementFrequency);
+    const selectedSpecialties = [...new Set(specialty.split(",").map((item) => item.trim()).filter(Boolean))];
+    for (const selectedSpecialty of selectedSpecialties) {
+      const incrementFrequency = db.raw.sql`
+        UPDATE public.medical_specialties
+        SET access_frequency = access_frequency + 1
+        WHERE medical_specialty = ${selectedSpecialty}
+      `.affectedCount().build();
+      await db.runtime().execute(incrementFrequency);
+    }
 
     const minimumRating = minRating && ["3", "4", "5"].includes(minRating)
       ? Number(minRating)
@@ -50,23 +52,27 @@ export class DoctorsController {
       city: selectedCity,
     };
 
-    const doctors = await db.orm.public.Doctors
-      .where({ specialty: selectedSpecialty })
-      .select(
-        "id",
-        "specialty",
-        "crmNumber",
-        "crmUf",
-        "street",
-        "addressNumber",
-        "addressComplement",
-        "insurances",
-      )
-      .include("user", (user) =>
-        user.select("name", "photo", "city", "stateAddress"),
-      )
-      .orderBy((doctor) => doctor.id.asc())
-      .all();
+    const doctors = (await Promise.all(selectedSpecialties.map((selectedSpecialty) =>
+      db.orm.public.Doctors
+        .where({ specialty: selectedSpecialty })
+        .select(
+          "id",
+          "specialty",
+          "crmNumber",
+          "crmUf",
+          "street",
+          "addressNumber",
+          "addressComplement",
+          "insurances",
+        )
+        .include("user", (user) =>
+          user.select("name", "photo", "city", "stateAddress"),
+        )
+        .orderBy((doctor) => doctor.id.asc())
+        .all(),
+    ))).flat().filter((doctor, index, all) =>
+      all.findIndex((candidate) => candidate.id === doctor.id) === index,
+    ).sort((left, right) => left.id - right.id);
 
     if (doctors.length === 0) return { count: 0, doctors: [] };
 
