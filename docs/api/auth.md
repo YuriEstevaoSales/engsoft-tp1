@@ -37,6 +37,9 @@ form. The role is resolved from the related `doctors` or `patients` row.
   profile, or an invalid password.
 
 The frontend stores the returned user session locally and opens `/perfil` for
-both roles. Doctor and patient profile responses are served by the existing
+both roles. When a session exists, the home-page navbar replaces the `Entrar`
+button with the user's name and initial avatar. Clicking it opens the account
+menu with links to the profile and a `Deslogar` action that clears the local
+session and returns to `/`. Doctor and patient profile responses are served by the existing
 `GET /api/doctors/me?userId=<id>` endpoint; the endpoint returns the patient
 identity and insurance reference when the account is a patient.
