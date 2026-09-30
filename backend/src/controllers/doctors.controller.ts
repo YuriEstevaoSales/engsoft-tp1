@@ -22,6 +22,7 @@ export class DoctorsController {
     @Query("minRating") minRating?: string,
     @Query("insuranceId") insuranceId?: string,
     @Query("state") state?: string,
+    @Query("city") city?: string,
   ) {
     if (typeof specialty !== "string" || !specialty.trim()) {
       return { count: 0, doctors: [] };
@@ -41,10 +42,12 @@ export class DoctorsController {
       ? Number(insuranceId)
       : null;
     const selectedState = state?.trim().toLocaleUpperCase("pt-BR") || null;
+    const selectedCity = city?.trim() || null;
     const filters = {
       minimumRating,
       insuranceId: selectedInsuranceId,
       state: selectedState,
+      city: selectedCity,
     };
 
     const doctors = await db.orm.public.Doctors
