@@ -380,6 +380,21 @@
               }
             },
             "relations": {
+              "answers": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "doctorId"
+                  ]
+                },
+                "to": {
+                  "model": "Answers",
+                  "namespace": "public"
+                }
+              },
               "appointments": {
                 "cardinality": "1:1",
                 "nullable": true,
@@ -1012,7 +1027,23 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "answers": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "questionId"
+                  ]
+                },
+                "to": {
+                  "model": "Answers",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "createdAt": {
@@ -1201,6 +1232,11 @@
       "public": {
         "entries": {
           "rls": {
+            "answers": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "answers"
+            },
             "appointments": {
               "kind": "rls",
               "namespaceId": "public",
