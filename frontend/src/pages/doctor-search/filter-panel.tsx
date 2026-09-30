@@ -1,7 +1,20 @@
-import { BRAZILIAN_STATES, type InsuranceOption } from "../../routes/doctor-search.js";
+import {
+  BRAZILIAN_STATES,
+  createMedicalSpecialtySlug,
+  type InsuranceOption,
+} from "../../routes/doctor-search.js";
+
+export function toggleSpecialtySelection(slugs: readonly string[], slug: string): string[] {
+  return slugs.includes(slug)
+    ? slugs.filter((item) => item !== slug)
+    : [...slugs, slug];
+}
 
 interface FilterPanelProps {
   isOpen: boolean;
+  selectedSpecialtySlugs: string[];
+  specialties: string[];
+  onSpecialtyChange: (specialtySlugs: string[]) => void;
   minRating: string;
   onMinRatingChange: (rating: string) => void;
   state: string;
@@ -17,6 +30,9 @@ interface FilterPanelProps {
 
 export function FilterPanel({
   isOpen,
+  selectedSpecialtySlugs,
+  specialties,
+  onSpecialtyChange,
   minRating,
   onMinRatingChange,
   state,
@@ -33,7 +49,27 @@ export function FilterPanel({
 
   return (
     <section className="mb-6 rounded-xl border border-[#cbd8d4] bg-white p-4">
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-5">
+        <fieldset className="text-sm font-semibold">
+          <legend>Especialidade</legend>
+          <div className="mt-2 max-h-40 space-y-2 overflow-y-auto rounded border border-[#cbd8d4] p-3 font-normal">
+            {specialties.map((specialty) => {
+              const specialtySlug = createMedicalSpecialtySlug(specialty);
+              const checked = selectedSpecialtySlugs.includes(specialtySlug);
+              return (
+                <label key={specialty} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    disabled={checked && selectedSpecialtySlugs.length === 1}
+                    onChange={() => onSpecialtyChange(toggleSpecialtySelection(selectedSpecialtySlugs, specialtySlug))}
+                  />
+                  {specialty}
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
         <label className="text-sm font-semibold">
           Avaliação
           <select

@@ -86,6 +86,7 @@ export function DoctorSearchPage() {
   const totalPages = Math.ceil(doctors.length / itemsPerPage);
   const visiblePages = getVisiblePageNumbers(currentPage, totalPages);
   const error = catalogError || searchError;
+  const selectedSpecialtySlugs = specialtySlug.split(",").filter(Boolean);
 
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -139,6 +140,11 @@ export function DoctorSearchPage() {
       </button>
       <FilterPanel
         isOpen={filtersOpen}
+        selectedSpecialtySlugs={selectedSpecialtySlugs}
+        specialties={specialtyCatalog}
+        onSpecialtyChange={(nextSpecialtySlugs) => {
+          void navigate(`/encontrar-medico/${nextSpecialtySlugs.join(",")}`);
+        }}
         minRating={minRating}
         onMinRatingChange={setMinRating}
         state={state}
