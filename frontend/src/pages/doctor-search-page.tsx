@@ -1,9 +1,14 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { readSession } from "../auth/session.js";
 import { findMedicalSpecialty, filterMedicalSpecialties } from "../routes/specialties.js";
 import {
-  createMedicalSpecialtySlug,
+  createMedicalSpecialtiesSlug,
   getVisiblePageNumbers,
+  loadMunicipalities,
+  loadUserLocation,
+  stateAbbreviation,
+  resolveMedicalSpecialtiesSlugs,
   type SearchDoctor,
 } from "../routes/doctor-search.js";
 import { DoctorCard } from "./doctor-search/doctor-card.js";
@@ -23,6 +28,9 @@ export function DoctorSearchPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [minRating, setMinRating] = useState("");
   const [state, setState] = useState("");
+  const [city, setCity] = useState("");
+  const [municipalities, setMunicipalities] = useState<string[]>([]);
+  const [municipalitiesLoading, setMunicipalitiesLoading] = useState(false);
   const [insuranceId, setInsuranceId] = useState("");
 
   const { specialtyCatalog, insurances, error: catalogError, specialtyCatalogRef } = useCatalog();
@@ -30,12 +38,45 @@ export function DoctorSearchPage() {
     specialtySlug,
     minRating,
     state,
+    city,
     insuranceId,
     specialtyCatalogRef,
   });
   useEffect(() => {
-    if (specialty) setSpecialtyQuery(specialty);
+    if (specialty) setSpecialtyQuery("");
   }, [specialty]);
+
+  useEffect(() => {
+    const user = readSession();
+    if (!user) return;
+    void loadUserLocation(user.id).then((location) => {
+      if (!location) return;
+      setState(stateAbbreviation(location.state));
+      setCity(location.city ?? "");
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!state) {
+      setMunicipalities([]);
+      return;
+    }
+    let active = true;
+    setMunicipalitiesLoading(true);
+    void loadMunicipalities(state)
+      .then((items) => {
+        if (active) setMunicipalities(items);
+      })
+      .catch(() => {
+        if (active) setMunicipalities([]);
+      })
+      .finally(() => {
+        if (active) setMunicipalitiesLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [state]);
 
   const specialtyMatches = filterMedicalSpecialties(specialtyCatalog, specialtyQuery);
   const today = new Date();
@@ -45,6 +86,7 @@ export function DoctorSearchPage() {
   const totalPages = Math.ceil(doctors.length / itemsPerPage);
   const visiblePages = getVisiblePageNumbers(currentPage, totalPages);
   const error = catalogError || searchError;
+  const selectedSpecialtySlugs = specialtySlug.split(",").filter(Boolean);
 
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -53,7 +95,9 @@ export function DoctorSearchPage() {
     const selected = exact ?? first;
     if (selected) {
       setSpecialtySearchOpen(false);
-      void navigate(`/encontrar-medico/${createMedicalSpecialtySlug(selected)}`);
+      const current = resolveMedicalSpecialtiesSlugs(specialtyCatalog, specialtySlug);
+      const next = current.includes(selected) ? current : [...current, selected];
+      void navigate(`/encontrar-medico/${createMedicalSpecialtiesSlug(next)}`);
     }
   }
 
@@ -71,7 +115,9 @@ export function DoctorSearchPage() {
         onSubmit={handleSearchSubmit}
         onSelectSpecialty={(item) => {
           setSpecialtySearchOpen(false);
-          void navigate(`/encontrar-medico/${createMedicalSpecialtySlug(item)}`);
+          const current = resolveMedicalSpecialtiesSlugs(specialtyCatalog, specialtySlug);
+          const next = current.includes(item) ? current : [...current, item];
+          void navigate(`/encontrar-medico/${createMedicalSpecialtiesSlug(next)}`);
         }}
       />
       <SearchHeader specialty={specialty} doctorCount={doctors.length} loading={loading} error={error} />
@@ -94,10 +140,22 @@ export function DoctorSearchPage() {
       </button>
       <FilterPanel
         isOpen={filtersOpen}
+        selectedSpecialtySlugs={selectedSpecialtySlugs}
+        specialties={specialtyCatalog}
+        onSpecialtyChange={(nextSpecialtySlugs) => {
+          void navigate(`/encontrar-medico/${nextSpecialtySlugs.join(",")}`);
+        }}
         minRating={minRating}
         onMinRatingChange={setMinRating}
         state={state}
-        onStateChange={setState}
+        onStateChange={(nextState) => {
+          setState(nextState);
+          setCity("");
+        }}
+        city={city}
+        onCityChange={setCity}
+        municipalities={municipalities}
+        municipalitiesLoading={municipalitiesLoading}
         insuranceId={insuranceId}
         onInsuranceChange={setInsuranceId}
         insurances={insurances}

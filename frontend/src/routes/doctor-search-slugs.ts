@@ -8,6 +8,10 @@ export function createMedicalSpecialtySlug(specialty: string) {
     .replace(/^-|-$/g, "");
 }
 
+export function createMedicalSpecialtiesSlug(specialties: readonly string[]) {
+  return specialties.map(createMedicalSpecialtySlug).join(",");
+}
+
 export function resolveMedicalSpecialtySlug(
   specialties: readonly string[],
   slug: string,
@@ -15,6 +19,15 @@ export function resolveMedicalSpecialtySlug(
   return specialties.find(
     (specialty) => createMedicalSpecialtySlug(specialty) === slug,
   ) ?? null;
+}
+
+export function resolveMedicalSpecialtiesSlugs(
+  specialties: readonly string[],
+  slugs: string,
+) {
+  return slugs.split(",")
+    .map((slug) => resolveMedicalSpecialtySlug(specialties, slug))
+    .filter((specialty): specialty is string => specialty !== null);
 }
 
 export function extractMedicalSpecialtySlug(segment: string) {

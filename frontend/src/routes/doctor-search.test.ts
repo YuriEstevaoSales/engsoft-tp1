@@ -10,6 +10,8 @@ import { getVisiblePageNumbers } from "./doctor-search-pagination.js";
 import {
   createMedicalSpecialtySlug,
   extractMedicalSpecialtySlug,
+  createMedicalSpecialtiesSlug,
+  resolveMedicalSpecialtiesSlugs,
   resolveMedicalSpecialtySlug,
 } from "./doctor-search-slugs.js";
 import { DOCTOR_SEARCH_ROUTE_PATH } from "./doctor-search-types.js";
@@ -24,6 +26,20 @@ test("creates accent-insensitive specialty slugs and resolves them from the cata
   assert.equal(extractMedicalSpecialtySlug("encontrar-medico-cardiologia"), "cardiologia");
   assert.equal(extractMedicalSpecialtySlug("sobre"), null);
   assert.equal(extractMedicalSpecialtySlug("encontrar-medico-"), null);
+});
+
+test("creates and resolves a list of specialty slugs", () => {
+  assert.equal(
+    createMedicalSpecialtiesSlug(["Cardiologia", "Ginecologia"]),
+    "cardiologia,ginecologia",
+  );
+  assert.deepEqual(
+    resolveMedicalSpecialtiesSlugs(
+      ["Cardiologia", "Ginecologia"],
+      "cardiologia,ginecologia",
+    ),
+    ["Cardiologia", "Ginecologia"],
+  );
 });
 
 test("matches the doctor-search URL through its dynamic route segment", () => {

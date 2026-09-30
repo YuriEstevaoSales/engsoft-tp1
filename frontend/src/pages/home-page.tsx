@@ -4,7 +4,7 @@ import { HomeProof } from "./home-proof.js";
 import { HomeSearch } from "./home-search.js";
 import { HomeSteps } from "./home-steps.js";
 import { loadMedicalSpecialties } from "../routes/specialties.js";
-import { createMedicalSpecialtySlug } from "../routes/doctor-search.js";
+import { createMedicalSpecialtiesSlug } from "../routes/doctor-search.js";
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ export function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useState<string[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -26,8 +26,10 @@ export function HomePage() {
   }, []);
 
   function selectSpecialty(value: string) {
-    setSearch(value);
-    setSelected(value);
+    setSearch("");
+    setSelected((current) =>
+      current.includes(value) ? current.filter((item) => item !== value) : [...current, value],
+    );
   }
 
   return (
@@ -38,9 +40,9 @@ export function HomePage() {
         error={error}
         search={search}
         selected={selected}
-        onSearchChange={(value) => { setSearch(value); setSelected(""); }}
+        onSearchChange={setSearch}
         onSelect={selectSpecialty}
-        onSearch={(specialty) => navigate(`/encontrar-medico/${createMedicalSpecialtySlug(specialty)}`)}
+        onSearch={(selectedSpecialties) => navigate(`/encontrar-medico/${createMedicalSpecialtiesSlug(selectedSpecialties)}`)}
       />
       <HomeSteps />
       <HomeProof />

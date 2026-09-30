@@ -1,5 +1,6 @@
-import { useEffect } from "react";
-import { Link, NavLink, Outlet, useLocation } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
+import { clearSession, getFirstName, getNameInitial, readSession, SessionUser } from "../auth/session.js";
 import { DocHubLogo } from "./dochub-logo.js";
 
 type PublicLayoutProps = {
@@ -16,6 +17,9 @@ const navItems = [
 
 export function PublicLayout({ header = "light" }: PublicLayoutProps) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const [session, setSession] = useState<SessionUser | null>(() => readSession());
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const logoVariant = header === "light" || header === "home" ? "dark" : "light";
   const scrollToTop = () => window.scrollTo(0, 0);
   const home = header === "home";
@@ -28,7 +32,16 @@ export function PublicLayout({ header = "light" }: PublicLayoutProps) {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    setSession(readSession());
+    setAccountMenuOpen(false);
   }, [pathname]);
+
+  function logout() {
+    clearSession();
+    setSession(null);
+    setAccountMenuOpen(false);
+    void navigate("/");
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -45,7 +58,7 @@ export function PublicLayout({ header = "light" }: PublicLayoutProps) {
                 {item.label}
               </NavLink>
             ))}
-            {home ? (
+            {home && !session ? (
               <Link
                 className="inline-flex items-center gap-2 rounded-full bg-[#36a34b] px-4 py-2 text-white no-underline max-[760px]:px-3 max-[760px]:py-1.5"
                 to="/entrar"
@@ -53,6 +66,46 @@ export function PublicLayout({ header = "light" }: PublicLayoutProps) {
                 <span className="size-2 rounded-full border border-white" />
                 Entrar
               </Link>
+            ) : null}
+            {home && session ? (
+              <div className="relative">
+                <button
+                  aria-expanded={accountMenuOpen}
+                  aria-haspopup="menu"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#36a34b] px-3 py-1.5 text-white max-[760px]:text-[0.8rem]"
+                  type="button"
+                  onClick={() => setAccountMenuOpen((open) => !open)}
+                >
+                  <span className="grid size-8 place-items-center rounded-full bg-white font-bold text-[#267c3a]">
+                    {getNameInitial(session.name)}
+                  </span>
+                  <span>{getFirstName(session.name)}</span>
+                </button>
+                {accountMenuOpen ? (
+                  <div
+                    aria-label="Menu da conta"
+                    className="absolute right-0 top-full z-30 mt-2 min-w-40 rounded-xl bg-white p-2 text-left shadow-lg ring-1 ring-black/10"
+                    role="menu"
+                  >
+                    <Link
+                      className="block rounded-lg px-3 py-2 text-sm font-semibold text-[#1f5c53] hover:bg-[#eef8f3]"
+                      role="menuitem"
+                      to="/perfil"
+                      onClick={() => setAccountMenuOpen(false)}
+                    >
+                      Meu perfil
+                    </Link>
+                    <button
+                      className="block w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm font-semibold text-[#1f5c53] hover:bg-[#eef8f3]"
+                      role="menuitem"
+                      type="button"
+                      onClick={logout}
+                    >
+                      Deslogar
+                    </button>
+                  </div>
+                ) : null}
+              </div>
             ) : null}
           </nav>
         </div>

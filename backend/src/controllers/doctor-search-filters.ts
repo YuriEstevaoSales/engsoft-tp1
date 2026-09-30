@@ -2,12 +2,13 @@ export type DoctorSearchFilters = {
   minimumRating: number | null;
   insuranceId: number | null;
   state: string | null;
+  city: string | null;
 };
 
 type FilterableDoctor = {
   averageRating: number | null;
   insurances: readonly number[] | null;
-  user: { stateAddress: string } | null;
+  user: { stateAddress: string; city: string | null } | null;
 };
 
 const brazilianStates = [
@@ -35,6 +36,14 @@ function normalizeState(value: string) {
   return match?.[0] ?? normalized;
 }
 
+function normalizeCity(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .trim()
+    .toLocaleLowerCase("pt-BR");
+}
+
 export function matchesDoctorSearchFilters<T extends FilterableDoctor>(
   doctor: T,
   filters: DoctorSearchFilters,
@@ -47,5 +56,7 @@ export function matchesDoctorSearchFilters<T extends FilterableDoctor>(
     && doctor.user !== null
     && (filters.state === null
       || normalizeState(doctor.user.stateAddress) === normalizeState(filters.state))
+    && (filters.city === null
+      || (typeof doctor.user.city === "string" && normalizeCity(doctor.user.city) === normalizeCity(filters.city)))
   );
 }

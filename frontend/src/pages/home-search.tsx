@@ -1,18 +1,19 @@
-import type { FormEvent } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import {
   filterMedicalSpecialties,
   findMedicalSpecialty,
 } from "../routes/specialties.js";
 import { HomeSpecialtySuggestions } from "./home-specialty-suggestions.js";
+
 type HomeSearchProps = {
   specialties: string[];
   loading: boolean;
   error: string;
   search: string;
-  selected: string;
+  selected: string[];
   onSearchChange: (value: string) => void;
   onSelect: (value: string) => void;
-  onSearch: (value: string) => void;
+  onSearch: (value: string[]) => void;
 };
 function SearchIcon() {
   return (
@@ -25,13 +26,30 @@ function SearchIcon() {
 export function HomeSearch({
   specialties, loading, error, search, selected, onSearchChange, onSelect, onSearch,
 }: HomeSearchProps) {
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const [searchFocused, setSearchFocused] = useState(false);
   const matching = filterMedicalSpecialties(specialties, search);
-  const searchIsOpen = search.trim().length > 0 && !selected;
+  const searchIsOpen = searchFocused && search.trim().length > 0 && !loading && !error;
+
+  useEffect(() => {
+    function closeOnOutsideClick(event: MouseEvent) {
+      if (!searchContainerRef.current?.contains(event.target as Node)) {
+        setSearchFocused(false);
+      }
+    }
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+  }, []);
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const match = findMedicalSpecialty(specialties, search);
-    if (match) onSearch(match);
+    if (match) {
+      const next = selected.includes(match) ? selected : [...selected, match];
+      onSearch(next);
+    } else if (selected.length) {
+      onSearch(selected);
+    }
   }
   return (
     <section
@@ -49,7 +67,7 @@ export function HomeSearch({
         <p className="mx-auto mb-7 mt-[18px] max-w-[550px] text-base leading-relaxed text-[#304546]">
           Encontre profissionais de saúde e marque sua consulta de um jeito simples e seguro.
         </p>
-        <div className="relative z-20 mx-auto w-full max-w-[630px]">
+        <div className="relative z-20 mx-auto w-full max-w-[630px]" ref={searchContainerRef}>
           <form
             className="flex w-full items-center gap-3 rounded-full border border-[#195d8629] bg-white/90 py-1.5 pl-5 pr-2 shadow-[0_9px_30px_rgb(25_73_66_/_12%)]"
             onSubmit={submit}
@@ -65,6 +83,7 @@ export function HomeSearch({
               type="search"
               value={search}
               onChange={(event) => onSearchChange(event.currentTarget.value)}
+              onFocus={() => setSearchFocused(true)}
               placeholder="Qual especialidade você procura?"
               autoComplete="off"
               aria-autocomplete="list"
@@ -90,9 +109,9 @@ export function HomeSearch({
         <div className="mx-auto mt-4 min-h-16" aria-label="Especialidades médicas">
           <HomeSpecialtySuggestions specialties={specialties} loading={loading} error={error} selected={selected} onSelect={onSelect} />
         </div>
-        {selected ? (
+        {selected.length ? (
           <p className="mt-2 text-sm text-[#315a53]" role="status">
-            Especialidade selecionada: <strong>{selected}</strong>
+            Especialidades selecionadas: <strong>{selected.join(", ")}</strong>
           </p>
         ) : null}
       </div>

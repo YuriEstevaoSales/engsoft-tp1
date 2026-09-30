@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { loadDoctorsBySpecialty, resolveMedicalSpecialtySlug, type SearchDoctor } from "../../routes/doctor-search.js";
+import { loadDoctorsBySpecialty, resolveMedicalSpecialtiesSlugs, type SearchDoctor } from "../../routes/doctor-search.js";
 import { loadMedicalSpecialties } from "../../routes/specialties.js";
 
 interface UseDoctorSearchParams {
   specialtySlug: string;
   minRating: string;
   state: string;
+  city: string;
   insuranceId: string;
   specialtyCatalogRef: React.MutableRefObject<string[] | null>;
 }
@@ -14,6 +15,7 @@ export function useDoctorSearch({
   specialtySlug,
   minRating,
   state,
+  city,
   insuranceId,
   specialtyCatalogRef,
 }: UseDoctorSearchParams) {
@@ -33,15 +35,16 @@ export function useDoctorSearch({
     async function search() {
       const catalog = specialtyCatalogRef.current ?? await loadMedicalSpecialties();
       if (!active) return;
-      const selected = resolveMedicalSpecialtySlug(catalog, specialtySlug);
-      if (!selected) throw new Error("Especialidade não encontrada.");
+      const selected = resolveMedicalSpecialtiesSlugs(catalog, specialtySlug);
+      if (!selected.length) throw new Error("Especialidade não encontrada.");
       const results = await loadDoctorsBySpecialty(selected, {
         minRating: minRating ? Number(minRating) : undefined,
         state: state || undefined,
+        city: city || undefined,
         insuranceId: insuranceId ? Number(insuranceId) : undefined,
       });
       if (active) {
-        setSpecialty(selected);
+        setSpecialty(selected.join(", "));
         setDoctors(results);
       }
     }
@@ -51,7 +54,7 @@ export function useDoctorSearch({
       if (active) setLoading(false);
     });
     return () => { active = false; };
-  }, [specialtySlug, minRating, state, insuranceId, specialtyCatalogRef]);
+  }, [specialtySlug, minRating, state, city, insuranceId, specialtyCatalogRef]);
 
   return { specialty, doctors, loading, error };
 }

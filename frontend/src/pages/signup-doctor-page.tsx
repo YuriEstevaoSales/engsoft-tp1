@@ -100,8 +100,8 @@ export function SignupDoctorPage() {
           <label className={formFieldClass}><span>Celular</span><input className={formControlClass} name="mobile" /></label>
         </div>
         <div className={formDividerClass}>Crie sua senha</div>
-        <label className={formFieldClass}><span>Senha</span><input className={formControlClass} name="password" type="password" required minLength={6} /></label>
-        <label className={formFieldClass}><span>Confirmação da senha</span><input className={formControlClass} name="confirm" type="password" required minLength={6} /></label>
+        <label className={formFieldClass}><span>Senha</span><PasswordInput className={formControlClass} name="password" required minLength={6} /></label>
+        <label className={formFieldClass}><span>Confirmação da senha</span><PasswordInput className={formControlClass} name="confirm" required minLength={6} /></label>
         {error ? <p className={formErrorClass} role="alert">{error}</p> : null}
         <button className={formButtonClass} type="submit" disabled={pending}>
           {pending ? "Salvando..." : "Finalizar cadastro"}

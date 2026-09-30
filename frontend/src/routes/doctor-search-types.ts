@@ -21,7 +21,21 @@ export type SearchFilters = {
   minRating?: number;
   insuranceId?: number;
   state?: string;
+  city?: string;
 };
+
+export type Municipality = {
+  id: number;
+  nome: string;
+};
+
+export function stateAbbreviation(value: string) {
+  const normalized = value.normalize("NFD").replace(/\p{Diacritic}/gu, "").trim().toLocaleUpperCase("pt-BR");
+  return BRAZILIAN_STATES.find(([abbreviation, name]) =>
+    abbreviation === normalized
+    || name.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLocaleUpperCase("pt-BR") === normalized,
+  )?.[0] ?? normalized;
+}
 
 export type InsuranceOption = {
   id: number;
