@@ -110,3 +110,56 @@ Como médico, eu gostaria de me cadastrar na plataforma.
 Como médico, eu gostaria de visualizar as datas das minhas consultas agendadas.
 
 Como médico, eu gostaria de poder responder dúvidas de outros pacientes.
+
+## Documentação Preliminar (UML)
+
+### 1. Diagrama de Casos de Uso
+*Visão geral das interações entre os diferentes tipos de usuários (Visitantes Anônimos, Pacientes e Médicos) e as funcionalidades da plataforma.*
+
+```mermaid
+flowchart LR
+classDef wip fill:#f3f4f6,stroke:#9ca3af,stroke-width:2px,stroke-dasharray: 5 5,color:#6b7280;
+
+    %% Atores
+    Visitante([Visitante / Anônimo])
+    Paciente([Paciente])
+    Medico([Médico])
+
+    %% Sistema
+    subgraph DocHub [Plataforma DocHub]
+        %% Casos de Uso - Públicos
+        UC1(Buscar médicos por especialidade/local)
+        UC2(Visualizar avaliações)
+        UC3(Visualizar perguntas e respostas)
+        UC4(Enviar pergunta anônima)
+        
+        %% Casos de Uso - Paciente
+        UC5(Marcar consulta):::wip
+        UC6(Receber lembretes):::wip
+        UC7(Avaliar atendimento):::wip
+        
+        %% Casos de Uso - Médico
+        UC8(Fazer login / Cadastrar-se)
+        UC9(Gerenciar agenda):::wip
+        UC10(Responder perguntas no fórum)
+        UC11(Gerenciar prontuários):::wip
+    end
+
+    %% Relacionamentos Visitante
+    Visitante --> UC1
+    Visitante --> UC2
+    Visitante --> UC3
+    Visitante --> UC4
+
+    %% Relacionamentos Paciente (herda ações do visitante, mas focamos nas exclusivas)
+    Paciente --> UC5
+    Paciente --> UC6
+    Paciente --> UC7
+    Paciente -. "Também pode" .-> UC1
+    Paciente -. "Também pode" .-> UC4
+
+    %% Relacionamentos Médico
+    Medico --> UC8
+    Medico --> UC9
+    Medico --> UC10
+    Medico --> UC11
