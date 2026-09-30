@@ -1237,6 +1237,21 @@
               }
             },
             "relations": {
+              "authTokens": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "to": {
+                  "model": "AuthTokens",
+                  "namespace": "public"
+                }
+              },
               "doctors": {
                 "cardinality": "1:N",
                 "on": {
@@ -1333,6 +1348,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "appointments"
+            },
+            "auth_tokens": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "auth_tokens"
             },
             "doctors": {
               "kind": "rls",
@@ -2373,7 +2393,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "5b3c06fdc71ea93279e9158402982b3bb5c713b61c1367f60737927bb9edf296"
+    "storageHash": "eaa19c67ff872952c235232c471d5924cd247314cfbcf2750fcb3cfeb985ef46"
   },
   "capabilities": {
     "postgres": {
