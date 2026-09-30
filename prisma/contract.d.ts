@@ -867,6 +867,93 @@ type ContractBase = Omit<
               indexes: readonly [];
               foreignKeys: readonly [];
             };
+            readonly answers: {
+              columns: {
+                readonly answer: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly created_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly doctor_id: {
+                  readonly nativeType: 'int2';
+                  readonly codecId: 'pg/int2@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'function';
+                    readonly expression: 'autoincrement()';
+                  };
+                };
+                readonly question_id: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id']; readonly name: 'answers_pkey' };
+              uniques: readonly [
+                {
+                  readonly columns: readonly ['question_id', 'doctor_id'];
+                  readonly name: 'answers_question_doctor_key';
+                },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: 'answers_doctor_id_idx';
+                  readonly columns: readonly ['doctor_id'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'answers_question_created_at_idx';
+                  readonly columns: readonly ['question_id', 'created_at'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'answers_question_id_idx_fcfb223c';
+                  readonly prefix: 'answers_question_id_idx';
+                  readonly columns: readonly ['question_id'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'answers';
+                    readonly columns: readonly ['question_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'questions';
+                    readonly columns: readonly ['id'];
+                  };
+                  readonly name: 'answers_question_id_fkey';
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'answers';
+                    readonly columns: readonly ['doctor_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'doctors';
+                    readonly columns: readonly ['id'];
+                  };
+                  readonly name: 'answers_doctor_id_fkey';
+                },
+              ];
+            };
             readonly appointments: {
               columns: {
                 readonly created_at: {
