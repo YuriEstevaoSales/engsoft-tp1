@@ -10,13 +10,42 @@ export type RegisterDoctorInput = {
   clinicState?: string; clinicCity?: string;
 };
 
+export type RegisterPatientInput = {
+  email: string; name: string; cpf: string; birthday: string;
+  phoneNumber: string; stateAddress: string; city?: string; insuranceId?: string;
+  password: string;
+};
+
 @Injectable()
 export class AuthService {
-  async registerDoctor(input: RegisterDoctorInput) {
-    if (!input.email || !input.password || input.password.length < 6) {
-      throw new BadRequestException("Informe email e senha com pelo menos 6 caracteres.");
+  async registerPatient(input: RegisterPatientInput) {
+    this.validateCommonRegistration(input);
+    const insurance = input.insuranceId ? Number(input.insuranceId) : null;
+    try {
+      const user = await db.transaction(async (tx) => {
+        const created = await tx.orm.public.Users.select("id", "name", "email").create({
+          email: input.email.trim().toLowerCase(), name: input.name.trim(),
+          cpf: input.cpf.trim(), birthday: Temporal.PlainDate.from(input.birthday),
+          phoneNumber: input.phoneNumber.trim(),
+          stateAddress: input.stateAddress.trim(), city: input.city?.trim() || null,
+          passwordEncrypted: await encryptPassword(input.password),
+          photo: null, gender: null,
+        });
+        await tx.orm.public.Patients.create({
+          userId: created.id,
+          insurance: insurance !== null && Number.isFinite(insurance) ? insurance : null,
+        });
+        return created;
+      });
+      return { id: user.id, name: user.name, email: user.email, role: "paciente" as const };
+    } catch (error) {
+      throw this.mapWriteError(error);
     }
-    if (!input.name || !input.cpf || !input.crm || !input.street || !input.addressNumber) {
+  }
+
+  async registerDoctor(input: RegisterDoctorInput) {
+    this.validateCommonRegistration(input);
+    if (!input.crm || !input.street || !input.addressNumber) {
       throw new BadRequestException("Preencha todos os campos obrigatórios.");
     }
     const { uf, number } = this.parseCrm(input.crm, input.clinicState ?? input.stateAddress);
@@ -55,11 +84,30 @@ export class AuthService {
       .where({ email: email.trim().toLowerCase() }).first();
     const doctor = user
       ? await db.orm.public.Doctors.select("id").where({ userId: user.id }).first() : null;
-    if (!user || !doctor) throw new UnauthorizedException("Email ou senha inválidos.");
+    const patient = user
+      ? await db.orm.public.Patients.select("id").where({ userId: user.id }).first() : null;
+    if (!user || (!doctor && !patient)) throw new UnauthorizedException("Email ou senha inválidos.");
     if (!(await passwordMatches(password, user.passwordEncrypted))) {
       throw new UnauthorizedException("Email ou senha inválidos.");
     }
-    return { id: user.id, name: user.name, email: user.email, role: "medico" as const };
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: doctor ? "medico" as const : "paciente" as const,
+    };
+  }
+
+  private validateCommonRegistration(input: {
+    email: string; password: string; name: string; cpf: string;
+    birthday: string; phoneNumber: string; stateAddress: string;
+  }) {
+    if (!input.email || !input.password || input.password.length < 6) {
+      throw new BadRequestException("Informe email e senha com pelo menos 6 caracteres.");
+    }
+    if (!input.name || !input.cpf || !input.birthday || !input.phoneNumber || !input.stateAddress) {
+      throw new BadRequestException("Preencha todos os campos obrigatórios.");
+    }
   }
 
   private parseCrm(crm: string, fallbackUf: string) {

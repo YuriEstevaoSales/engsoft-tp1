@@ -1,5 +1,5 @@
 import { Body, Controller, HttpException, Post } from "@nestjs/common";
-import { AuthService, RegisterDoctorInput } from "./auth.service.js";
+import { AuthService, RegisterDoctorInput, RegisterPatientInput } from "./auth.service.js";
 
 @Controller("api/auth")
 export class AuthController {
@@ -9,6 +9,15 @@ export class AuthController {
   async registerDoctor(@Body() body: RegisterDoctorInput) {
     try {
       return { user: await this.authService.registerDoctor(body) };
+    } catch (error) {
+      this.rethrow(error);
+    }
+  }
+
+  @Post("register-patient")
+  async registerPatient(@Body() body: RegisterPatientInput) {
+    try {
+      return { user: await this.authService.registerPatient(body) };
     } catch (error) {
       this.rethrow(error);
     }

@@ -107,7 +107,14 @@ export class DoctorsController {
       .select("specialty", "description", "appointmentPrice", "remoteAppointments",
         "street", "addressNumber", "addressComplement", "insurances")
       .where({ userId: id }).first();
-    if (!user || !doctor) return { profile: null };
-    return { profile: { ...user, ...doctor } };
+    if (!user) return { profile: null };
+    if (!doctor) {
+      const patient = await db.orm.public.Patients
+        .select("insurance")
+        .where({ userId: id }).first();
+      if (!patient) return { profile: null };
+      return { profile: { ...user, role: "paciente" as const, insurance: patient.insurance } };
+    }
+    return { profile: { ...user, ...doctor, role: "medico" as const } };
   }
 }
