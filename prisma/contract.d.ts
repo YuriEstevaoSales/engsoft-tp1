@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'5b3c06fdc71ea93279e9158402982b3bb5c713b61c1367f60737927bb9edf296'>;
+  StorageHashBase<'eaa19c67ff872952c235232c471d5924cd247314cfbcf2750fcb3cfeb985ef46'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -267,6 +267,13 @@ export type FieldOutputTypes = {
       readonly rate: CodecTypes['pg/int2@1']['output'] | null;
       readonly startTime: CodecTypes['pg/time-temporal@1']['output'];
     };
+    readonly AuthTokens: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/int8@1']['output'];
+      readonly tokenHash: CodecTypes['sql/varchar@1']['output'];
+      readonly userId: CodecTypes['pg/int2@1']['output'];
+    };
     readonly Doctors: {
       readonly addressComplement: CodecTypes['sql/varchar@1']['output'] | null;
       readonly addressNumber: CodecTypes['pg/int2@1']['output'];
@@ -367,6 +374,13 @@ export type FieldInputTypes = {
       readonly patientId: CodecTypes['pg/int2@1']['input'] | null;
       readonly rate: CodecTypes['pg/int2@1']['input'] | null;
       readonly startTime: CodecTypes['pg/time-temporal@1']['input'];
+    };
+    readonly AuthTokens: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/int8@1']['input'];
+      readonly tokenHash: CodecTypes['sql/varchar@1']['input'];
+      readonly userId: CodecTypes['pg/int2@1']['input'];
     };
     readonly Doctors: {
       readonly addressComplement: CodecTypes['sql/varchar@1']['input'] | null;
@@ -479,6 +493,13 @@ export type StorageColumnTypes = {
       readonly rate: CodecTypes['pg/int2@1']['output'] | null;
       readonly start_time: CodecTypes['pg/time-temporal@1']['output'];
     };
+    readonly auth_tokens: {
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly expires_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/int8@1']['output'];
+      readonly token_hash: CodecTypes['sql/varchar@1']['output'];
+      readonly user_id: CodecTypes['pg/int2@1']['output'];
+    };
     readonly doctors: {
       readonly address_complement: CodecTypes['sql/varchar@1']['output'] | null;
       readonly address_number: CodecTypes['pg/int2@1']['output'];
@@ -580,6 +601,13 @@ export type StorageColumnInputTypes = {
       readonly rate: CodecTypes['pg/int2@1']['input'] | null;
       readonly start_time: CodecTypes['pg/time-temporal@1']['input'];
     };
+    readonly auth_tokens: {
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly expires_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/int8@1']['input'];
+      readonly token_hash: CodecTypes['sql/varchar@1']['input'];
+      readonly user_id: CodecTypes['pg/int2@1']['input'];
+    };
     readonly doctors: {
       readonly address_complement: CodecTypes['sql/varchar@1']['input'] | null;
       readonly address_number: CodecTypes['pg/int2@1']['input'];
@@ -676,6 +704,15 @@ export namespace Models {
     doctor: public_Doctors;
     patient: public_Patients | null;
     readonly [RelationKeys]?: 'doctor' | 'patient';
+  };
+  export type public_AuthTokens = {
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/int8@1']['output'];
+    tokenHash: CodecTypes['sql/varchar@1']['output'];
+    userId: CodecTypes['pg/int2@1']['output'];
+    user: public_Users;
+    readonly [RelationKeys]?: 'user';
   };
   export type public_Doctors = {
     addressComplement: CodecTypes['sql/varchar@1']['output'] | null;
@@ -774,9 +811,10 @@ export namespace Models {
     photo: CodecTypes['pg/text@1']['output'] | null;
     role: CodecTypes['pg/text@1']['output'];
     stateAddress: CodecTypes['sql/varchar@1']['output'];
+    authTokens: public_AuthTokens[];
     doctors: public_Doctors[];
     patients: public_Patients | null;
-    readonly [RelationKeys]?: 'doctors' | 'patients';
+    readonly [RelationKeys]?: 'authTokens' | 'doctors' | 'patients';
   };
 }
 
