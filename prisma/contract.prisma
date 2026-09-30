@@ -15,6 +15,7 @@ model Users {
   id                SmallInt    @id(map: "users_pkey") @default(autoincrement())
   createdAt         Timestamptz @default(now()) @map("created_at")
   email             VarChar     @unique(map: "users_email_key")
+  role              String      @default("patient")
   name              VarChar
   cpf               VarChar     @unique(map: "users_cpf_key")
   birthday          Date
