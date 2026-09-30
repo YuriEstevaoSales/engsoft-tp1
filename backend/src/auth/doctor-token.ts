@@ -16,9 +16,9 @@ export function assertDoctorTokenConfiguration() {
   getTokenSecret();
 }
 
-export async function createDoctorToken(userId: number): Promise<string> {
+export async function createAuthToken(userId: number, role: "medico" | "paciente"): Promise<string> {
   if (!Number.isSafeInteger(userId) || userId < 1) throw new Error("Identidade médica inválida.");
-  return new SignJWT({ role: "medico" })
+  return new SignJWT({ role })
     .setProtectedHeader({ alg: TOKEN_ALGORITHM })
     .setIssuedAt()
     .setSubject(String(userId))
@@ -26,6 +26,10 @@ export async function createDoctorToken(userId: number): Promise<string> {
     .setAudience(TOKEN_AUDIENCE)
     .setExpirationTime("8h")
     .sign(getTokenSecret());
+}
+
+export async function createDoctorToken(userId: number): Promise<string> {
+  return createAuthToken(userId, "medico");
 }
 
 export async function verifyDoctorToken(token: string): Promise<JWTPayload> {

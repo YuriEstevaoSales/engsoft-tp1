@@ -17,7 +17,7 @@ export class AuthController {
   @Post("register-patient")
   async registerPatient(@Body() body: RegisterPatientInput) {
     try {
-      return { user: await this.authService.registerPatient(body) };
+      return await this.authService.registerPatient(body);
     } catch (error) {
       this.rethrow(error);
     }

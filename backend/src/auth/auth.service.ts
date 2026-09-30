@@ -1,6 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { createHash } from "node:crypto";
 import { db } from "../prisma/db.js";
-import { assertDoctorTokenConfiguration, createDoctorToken } from "./doctor-token.js";
+import { createAuthToken } from "./doctor-token.js";
 import { encryptPassword, passwordMatches } from "./password.js";
 
 export type RegisterDoctorInput = {
@@ -38,7 +39,7 @@ export class AuthService {
         });
         return created;
       });
-      return { id: user.id, name: user.name, email: user.email, role: "paciente" as const };
+      return this.createSession(user, "paciente");
     } catch (error) {
       throw this.mapWriteError(error);
     }
@@ -49,7 +50,6 @@ export class AuthService {
     if (!input.crm || !input.street || !input.addressNumber) {
       throw new BadRequestException("Preencha todos os campos obrigatórios.");
     }
-    assertDoctorTokenConfiguration();
     const { uf, number } = this.parseCrm(input.crm, input.clinicState ?? input.stateAddress);
     const insurance = input.insuranceId ? Number(input.insuranceId) : null;
     try {
@@ -75,32 +75,63 @@ export class AuthService {
         });
         return created;
       });
-      return this.createDoctorSession(user);
+      return this.createSession(user, "medico");
     } catch (error) {
       throw this.mapWriteError(error);
     }
   }
 
   async login(email: string, password: string) {
-    assertDoctorTokenConfiguration();
     const user = await db.orm.public.Users
       .select("id", "name", "email", "passwordEncrypted", "role")
       .where({ email: email.trim().toLowerCase() }).first();
-    if (!user || user.role !== "doctor") throw new UnauthorizedException("Email ou senha inválidos.");
-    const doctor = user
-      ? await db.orm.public.Doctors.select("id").where({ userId: user.id }).first() : null;
-    if (!doctor) throw new UnauthorizedException("Email ou senha inválidos.");
+    if (!user) throw new UnauthorizedException("Email ou senha inválidos.");
+    const doctor = user.role === "doctor"
+      ? await db.orm.public.Doctors.select("id").where({ userId: user.id }).first()
+      : null;
+    const patient = user.role !== "doctor"
+      ? await db.orm.public.Patients.select("id").where({ userId: user.id }).first()
+      : null;
+    if (!doctor && !patient) throw new UnauthorizedException("Email ou senha inválidos.");
     if (!(await passwordMatches(password, user.passwordEncrypted))) {
       throw new UnauthorizedException("Email ou senha inválidos.");
     }
-    return this.createDoctorSession(user);
+    if (doctor) return this.createSession(user, "medico");
+    return this.createSession(user, "paciente");
   }
 
-  private async createDoctorSession(user: { id: number; name: string; email: string }) {
+  private async createSession(
+    user: { id: number; name: string; email: string },
+    role: "medico" | "paciente",
+  ) {
+    const accessToken = await createAuthToken(user.id, role);
+    await db.orm.public.AuthTokens.create({
+      userId: user.id,
+      tokenHash: createHash("sha256").update(accessToken).digest("hex"),
+      expiresAt: Temporal.Instant.fromEpochMilliseconds(Date.now() + 8 * 60 * 60 * 1000),
+    });
     return {
-      user: { id: user.id, name: user.name, email: user.email, role: "medico" as const },
-      accessToken: await createDoctorToken(user.id),
+      user: { id: user.id, name: user.name, email: user.email, role },
+      accessToken,
     };
+  }
+
+  private validateCommonRegistration(input: {
+    email: string; password: string; name: string; cpf: string;
+    birthday: string; phoneNumber: string; stateAddress: string;
+  }) {
+    if (!input.email?.trim() || !input.password || input.password.length < 6) {
+      throw new BadRequestException("Informe email e senha com pelo menos 6 caracteres.");
+    }
+    if (
+      !input.name?.trim()
+      || !input.cpf?.trim()
+      || !input.birthday
+      || !input.phoneNumber?.trim()
+      || !input.stateAddress?.trim()
+    ) {
+      throw new BadRequestException("Preencha todos os campos obrigatórios.");
+    }
   }
 
   private parseCrm(crm: string, fallbackUf: string) {
