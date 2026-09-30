@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { UnauthorizedException } from "@nestjs/common";
 import { mock, test } from "node:test";
 import { db } from "../prisma/db.js";
 import { AuthService } from "./auth.service.js";
@@ -22,6 +21,7 @@ test("issues a verifiable doctor token after successful login", async () => {
   const doctorFirst = mock.fn(async () => ({ id: 9 }));
   const doctorWhere = mock.fn(() => ({ first: doctorFirst }));
   mock.method(db.orm.public.Doctors, "select", () => ({ where: doctorWhere }));
+  mock.method(db.orm.public.AuthTokens, "create", async () => ({ id: 1n }));
 
   try {
     const session = await new AuthService().login(user.email, "strong-password");
@@ -40,7 +40,7 @@ test("issues a verifiable doctor token after successful login", async () => {
   }
 });
 
-test("refuses to issue a doctor session to a non-medical account", async () => {
+test("issues a patient session without querying doctors", async () => {
   const originalSecret = process.env["AUTH_TOKEN_SECRET"];
   process.env["AUTH_TOKEN_SECRET"] = "e".repeat(64);
   const userFirst = mock.fn(async () => ({
@@ -55,11 +55,12 @@ test("refuses to issue a doctor session to a non-medical account", async () => {
   const doctorSelect = mock.method(db.orm.public.Doctors, "select", () => {
     throw new Error("non-medical accounts must not be checked as doctors");
   });
+  mock.method(db.orm.public.Patients, "select", () => ({ where: () => ({ first: async () => ({ id: 4 }) }) }));
+  mock.method(db.orm.public.AuthTokens, "create", async () => ({ id: 1n }));
   try {
-    await assert.rejects(
-      new AuthService().login("patient@example.com", "strong-password"),
-      UnauthorizedException,
-    );
+    const session = await new AuthService().login("patient@example.com", "strong-password");
+    assert.equal(session.user.role, "paciente");
+    assert.equal(typeof session.accessToken, "string");
     assert.equal(doctorSelect.mock.calls.length, 0);
   } finally {
     mock.restoreAll();

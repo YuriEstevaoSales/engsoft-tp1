@@ -37,6 +37,9 @@ test("rejects a valid signed identity that is not a doctor", async () => {
   const first = mock.fn(async () => null);
   const where = mock.fn((filter: { userId: number }) => ({ first, filter }));
   mock.method(db.orm.public.Doctors, "select", () => ({ where }));
+  mock.method(db.orm.public.AuthTokens, "select", () => ({
+    where: () => ({ first: async () => ({ id: 1n, expiresAt: Temporal.Instant.fromEpochMilliseconds(Date.now() + 60_000) }) }),
+  }));
   try {
     const token = await createDoctorToken(42);
     const { context } = createContext(`Bearer ${token}`);
@@ -54,6 +57,9 @@ test("attaches the verified doctor id to an authorized request", async () => {
   const first = mock.fn(async () => ({ id: 9 }));
   const where = mock.fn((filter: { userId: number }) => ({ first, filter }));
   mock.method(db.orm.public.Doctors, "select", () => ({ where }));
+  mock.method(db.orm.public.AuthTokens, "select", () => ({
+    where: () => ({ first: async () => ({ id: 1n, expiresAt: Temporal.Instant.fromEpochMilliseconds(Date.now() + 60_000) }) }),
+  }));
   try {
     const token = await createDoctorToken(42);
     const { context, request } = createContext(`Bearer ${token}`);
