@@ -6,6 +6,7 @@ interface UseDoctorSearchParams {
   specialtySlug: string;
   minRating: string;
   state: string;
+  city: string;
   insuranceId: string;
   specialtyCatalogRef: React.MutableRefObject<string[] | null>;
 }
@@ -14,6 +15,7 @@ export function useDoctorSearch({
   specialtySlug,
   minRating,
   state,
+  city,
   insuranceId,
   specialtyCatalogRef,
 }: UseDoctorSearchParams) {
@@ -38,6 +40,7 @@ export function useDoctorSearch({
       const results = await loadDoctorsBySpecialty(selected, {
         minRating: minRating ? Number(minRating) : undefined,
         state: state || undefined,
+        city: city || undefined,
         insuranceId: insuranceId ? Number(insuranceId) : undefined,
       });
       if (active) {
@@ -51,7 +54,7 @@ export function useDoctorSearch({
       if (active) setLoading(false);
     });
     return () => { active = false; };
-  }, [specialtySlug, minRating, state, insuranceId, specialtyCatalogRef]);
+  }, [specialtySlug, minRating, state, city, insuranceId, specialtyCatalogRef]);
 
   return { specialty, doctors, loading, error };
 }
